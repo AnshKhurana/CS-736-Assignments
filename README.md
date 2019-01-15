@@ -1,2 +1,2 @@
-# assignmentShapeAnalysis
-CS 736: Assignment 1
+# CS 736: Medical Image Computing
+## Assignment 1
