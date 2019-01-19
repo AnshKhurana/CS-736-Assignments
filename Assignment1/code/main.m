@@ -3,7 +3,6 @@
 clc; clear all; close all;
 
 %% Question 1
-%% 
 %% 1(a)
 load('../data/ellipses2D.mat');
 [Dim, Num, Samples] = size(pointSets);
@@ -43,7 +42,6 @@ plot(mean_ps(1, :) + (2*sqrt(lambda)*mode(1, :)), mean_ps(2, :) + (2*sqrt(lambda
 plot(mean_ps(1, :) - (2*sqrt(lambda)*mode(1, :)), mean_ps(2, :) - (2*sqrt(lambda)*mode(2, :)), 'LineWidth', 2); hold on;
 title("Mean along with the principal mode of variation (1 d.)");
 % legend("Mean", "Mean + 2\lambda", "Mean - 2\lambda");
-% % 
 figure;
 % % end question 1
 %% Question 2
@@ -90,8 +88,6 @@ plot(mean_ps(1, :) + (2*sqrt(lambda)*mode(1, :)), mean_ps(2, :) + (2*sqrt(lambda
 plot(mean_ps(1, :) - (2*sqrt(lambda)*mode(1, :)), mean_ps(2, :) - (2*sqrt(lambda)*mode(2, :)), 'LineWidth', 2); hold on;
 title("Computed mean along with the principal mode of variation (2 d.)");
 % legend("Mean", "Mean + 2\lambda", "Mean - 2\lambda");
-
-% % 
 figure;
 %  end question 2
 
@@ -156,8 +152,7 @@ trimesh(TriangleIndex, mean_ps(1, :)' - (2*sqrt(lambda)*mode(1, :))', mean_ps(2,
 title("Mean - 2 \lambda");
 set(gcf, 'units', 'normalized');
 set(gcf, 'Position', [0, 0.1, 1, 0.9]);
-sgtitle("Mean along with the principal mode of variation (3 d.)");
- 
+sgtitle("Mean along with the principal mode of variation (3 d.)"); 
 % % end question 3
 %% 
 %% end
