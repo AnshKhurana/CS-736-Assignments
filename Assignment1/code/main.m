@@ -10,7 +10,7 @@ load('../data/ellipses2D.mat');
 for i = 1:Samples
     plot(squeeze(pointSets(1, :, i)), squeeze(pointSets(2, :, i)), '.'); hold on;
 end
-title("Initial Poinsets for Question 1");
+title("Initial Poinsets (1 a.)");
 %%  
 figure;
 in_ps = toPreshape(pointSets);
@@ -20,12 +20,17 @@ for i = 1:Samples
 plot(squeeze(out_ps(1, :, i)), squeeze(out_ps(2, :, i)), '.'); hold on;
 end
 plot(mean_ps(1, :), mean_ps(2, :), 'LineWidth', 2); 
-title("Computed mean along with aligned pointsets");
+title("Computed mean along with aligned pointsets (1 b.)");
 figure;
 %% 
 [V, D] = getModes(out_ps, mean_ps);
+%% 1(c)
+eigenvalues = diag(D);
+plot(eigenvalues, '-o');
+title("Variances along each principal mode of shape variation (1 c.)");
+figure;
 
-%% 
+%% 1(d)
 for i = 1:Samples
 plot(squeeze(out_ps(1, :, i)), squeeze(out_ps(2, :, i)), '.'); hold on;
 end
@@ -36,6 +41,8 @@ mode = V(:, end);
 mode = reshape(mode, [size(in_ps, 1), size(in_ps, 2)]);
 plot(mean_ps(1, :) + (2*sqrt(lambda)*mode(1, :)), mean_ps(2, :) + (2*sqrt(lambda)*mode(2, :)), 'LineWidth', 2); hold on;
 plot(mean_ps(1, :) - (2*sqrt(lambda)*mode(1, :)), mean_ps(2, :) - (2*sqrt(lambda)*mode(2, :)), 'LineWidth', 2); hold on;
+title("Mean along with the principal mode of variation (1 d.)");
+% legend("Mean", "Mean + 2\lambda", "Mean - 2\lambda");
 % % 
 figure;
 % % end question 1
@@ -50,21 +57,27 @@ clear shapes;
 for i = 1:Samples
     plot(pointSets(1, :, i), pointSets(2, :, i), '.'); hold on;
 end
-title("Initial Poinsets for Question 2");
+title("Initial Poinsets (2 a.)");
 figure;
 %%
 in_ps = toPreshape(pointSets);
 [mean_ps, out_ps, logger] = getMeanshape(in_ps);
 
 [V, D] = getModes(out_ps, mean_ps);
-%% 1(b)
+%% 2(b)
 for i = 1:Samples
 plot(squeeze(out_ps(1, :, i)), squeeze(out_ps(2, :, i)), '.'); hold on;
 end
 plot(mean_ps(1, :), mean_ps(2, :), 'LineWidth', 2); 
-title("Computed mean along with aligned pointsets");
+title("Computed mean along with aligned pointsets (2 b.)");
 figure;
-%% 
+%% 2(c)
+eigenvalues = diag(D);
+plot(eigenvalues, '-o');
+title("Variances along each principal mode of shape variation (2 c.)");
+figure;
+
+%% 2(d) 
 for i = 1:Samples
 plot(squeeze(out_ps(1, :, i)), squeeze(out_ps(2, :, i)), '.'); hold on;
 end
@@ -75,6 +88,9 @@ mode = V(:, end);
 mode = reshape(mode, [size(in_ps, 1), size(in_ps, 2)]);
 plot(mean_ps(1, :) + (2*sqrt(lambda)*mode(1, :)), mean_ps(2, :) + (2*sqrt(lambda)*mode(2, :)), 'LineWidth', 2); hold on;
 plot(mean_ps(1, :) - (2*sqrt(lambda)*mode(1, :)), mean_ps(2, :) - (2*sqrt(lambda)*mode(2, :)), 'LineWidth', 2); hold on;
+title("Computed mean along with the principal mode of variation (2 d.)");
+% legend("Mean", "Mean + 2\lambda", "Mean - 2\lambda");
+
 % % 
 figure;
 %  end question 2
@@ -94,6 +110,7 @@ for i = 1:Samples
     title(["Shape ", num2str(i)]);
     if rem(i, 6) == 0 
             j = j + 1;
+            sgtitle("Initial pointsets (with triangular meshes) (3 a.)");
             if i ~= Samples
                 figure;
             end
@@ -104,18 +121,20 @@ clear shapesTotal;
 figure;
 in_ps = toPreshape(pointSets);
 [mean_ps, out_ps, logger] = getMeanshape(in_ps);
+%% 3(b) 
 trimesh(TriangleIndex, mean_ps(1, :)', mean_ps(2,:)', ...
     mean_ps(3,:)');
-title("Computed mean of aligned shapes");
-
+title("Computed mean of aligned shapes (3 b.)");
+figure;
 %%
 [V, D] = getModes(out_ps, mean_ps);
-%% 
-% for i = 1:Samples
-% trimesh(TriangleIndex, squeeze(out_ps(1, :, i)'), squeeze(out_ps(2, :, i)'), squeeze(out_ps(3, :, i)'),  '.'); hold on;
-% end
+%% 3(c)
+eigenvalues = diag(D);
+plot(eigenvalues, '-o');
+title("Variances along each principal mode of shape variation (3 c.)");
 figure;
 
+%% 3(d) 
 lambda = D(end);
 mode = V(:, end);
 mode = reshape(mode, [size(in_ps, 1), size(in_ps, 2)]);
@@ -137,8 +156,9 @@ trimesh(TriangleIndex, mean_ps(1, :)' - (2*sqrt(lambda)*mode(1, :))', mean_ps(2,
 title("Mean - 2 \lambda");
 set(gcf, 'units', 'normalized');
 set(gcf, 'Position', [0, 0.1, 1, 0.9]);
-% % 
+sgtitle("Mean along with the principal mode of variation (3 d.)");
+ 
 % % end question 3
-
+%% 
 %% end
 
