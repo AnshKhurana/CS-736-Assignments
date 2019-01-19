@@ -16,7 +16,8 @@ function [ mean_ps, out_ps, logger ] = getMeanshape( in_ps, mean_ps_curr )
         if iter > maxiter
             break
         end
-        iter = iter + 1; disp(iter);
+        iter = iter + 1;
+%         disp(iter);
         for i = 1:size(in_ps, 3)
             Ri = alignKabsch(in_ps(:, :, i), mean_ps_curr);
             out_ps(:, :, i) = Ri * in_ps(:, :, i);

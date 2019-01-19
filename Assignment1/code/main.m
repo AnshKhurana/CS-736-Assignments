@@ -44,6 +44,7 @@ figure;
 clear;
 load("../data/hands2D.mat");
 pointSets = shapes;
+clear shapes;
 [Dim, Num, Samples] = size(pointSets);
 %% 2(a)
 for i = 1:Samples
@@ -98,6 +99,46 @@ for i = 1:Samples
             end
     end
 end
+pointSets = shapesTotal;
+clear shapesTotal;
+figure;
+in_ps = toPreshape(pointSets);
+[mean_ps, out_ps, logger] = getMeanshape(in_ps);
+trimesh(TriangleIndex, mean_ps(1, :)', mean_ps(2,:)', ...
+    mean_ps(3,:)');
+title("Computed mean of aligned shapes");
+
+%%
+[V, D] = getModes(out_ps, mean_ps);
+%% 
+% for i = 1:Samples
+% trimesh(TriangleIndex, squeeze(out_ps(1, :, i)'), squeeze(out_ps(2, :, i)'), squeeze(out_ps(3, :, i)'),  '.'); hold on;
+% end
+figure;
+
+lambda = D(end);
+mode = V(:, end);
+mode = reshape(mode, [size(in_ps, 1), size(in_ps, 2)]);
+%plot(mean_ps(1, :) + (2*sqrt(lambda)*mode(1, :)), mean_ps(2, :) + (2*sqrt(lambda)*mode(2, :)), ...
+%     mean_ps(3, :) + (2*sqrt(lambda)*mode(3, :)), 'LineWidth', 2); hold on;
+% plot(mean_ps(1, :) - (2*sqrt(lambda)*mode(1, :)), mean_ps(2, :) - (2*sqrt(lambda)*mode(2, :)), ...
+%     mean_ps(3, :) + (2*sqrt(lambda)*mode(3, :)), 'LineWidth', 2); hold on;
+subplot(1, 3, 3);
+trimesh(TriangleIndex, mean_ps(1, :)' + (2*sqrt(lambda)*mode(1, :))', mean_ps(2, :)' + (2*sqrt(lambda)*mode(2, :))', ...
+    mean_ps(3, :)' + (2*sqrt(lambda)*mode(3, :))'); hold on;
+title("Mean + 2 \lambda");
+subplot(1, 3, 2);
+trimesh(TriangleIndex, mean_ps(1, :)', mean_ps(2,:)', ...
+    mean_ps(3,:)');
+title("Mean"); hold on;
+subplot(1, 3, 1);
+trimesh(TriangleIndex, mean_ps(1, :)' - (2*sqrt(lambda)*mode(1, :))', mean_ps(2, :)' - (2*sqrt(lambda)*mode(2, :))', ...
+    mean_ps(3, :)' - (2*sqrt(lambda)*mode(3, :))'); hold on;
+title("Mean - 2 \lambda");
+set(gcf, 'units', 'normalized');
+set(gcf, 'Position', [0, 0.1, 1, 0.9]);
+% % 
+% % end question 3
 
 %% end
 
