@@ -10,7 +10,7 @@
 %  corresponding Matlab functions 'toPreshape', 'alignKabsch',
 %  'getMeanshape' and 'getModes'.
 clc; clear all; close all;
-warning('off', 'all');
+
 %% 1. Simulated dataset: 2D Ellipses
 %% 1(a)
 load('../data/ellipses2D.mat');
