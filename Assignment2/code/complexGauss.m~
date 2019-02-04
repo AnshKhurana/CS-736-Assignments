@@ -1,0 +1,5 @@
+function [V, G] = complexGauss(Y, X)
+
+d = siX
+V = 1/pi *  exp(- norm(Y- X));
+G = zeros(5, 5);
