@@ -11,3 +11,14 @@ clc; clear all; close all;
 
 %% Question1
 % Formulate the 3 CFs and optimize using GD
+load("../data/assignmentImageDenoisingPhantom.mat");
+% Loads imageNoiseless, imageNoisy
+% a) 
+r = RRMSE(imageNoiseless, imageNoisy);
+% b) 
+alpha = 0.5;
+gradientDes(imageNoisy, complexGauss, quadPrior, 0.5);
+% Displaying the images (c)
+imshow(imageNoiseless);
+figure;
+imshow(imageNoisy);
