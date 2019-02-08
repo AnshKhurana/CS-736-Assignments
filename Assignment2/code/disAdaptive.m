@@ -18,25 +18,25 @@ val = val + temp;
 
 temp = zeros(size(image));
 
-less = (modXr <= gamma);
-temp(less) = 0.5 * modXr(less).^2;
-temp(~less) = gamma * modXr(~less) - 0.5*gamma*gamma;
+less = (modXl <= gamma);
+temp(less) = 0.5 * modXl(less).^2;
+temp(~less) = gamma * modXl(~less) - 0.5*gamma*gamma;
 
 val = val + temp;
 
 temp = zeros(size(image));
 
-less = (modXr <= gamma);
-temp(less) = 0.5 * modXr(less).^2;
-temp(~less) = gamma * modXr(~less) - 0.5*gamma*gamma;
+less = (modXt <= gamma);
+temp(less) = 0.5 * modXt(less).^2;
+temp(~less) = gamma * modXt(~less) - 0.5*gamma*gamma;
 
 val = val + temp;
 
 temp = zeros(size(image));
 
-less = (modXr <= gamma);
-temp(less) = 0.5 * modXr(less).^2;
-temp(~less) = gamma * modXr(~less) - 0.5*gamma*gamma;
+less = (modXb <= gamma);
+temp(less) = 0.5 * modXb(less).^2;
+temp(~less) = gamma * modXb(~less) - 0.5*gamma*gamma;
 
 val = val + temp;
 
