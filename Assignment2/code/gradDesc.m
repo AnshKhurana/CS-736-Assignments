@@ -1,19 +1,19 @@
-function [x, logger] = gradDesc(img, x, mode)
+function [x, logger] = gradDesc(img, x, mode, al, lam)
 % Gradient descent routine; mode specifies params and objective
 % img, x: m X n real-valued
 % mode: quadPrior, huberPrior or adaPrior
 
 if strcmp(mode, 'quadPrior')
-    alpha = 0.5; % TODO: tune
+    alpha = al; % TODO: tune
     gamma = nan;
     getCost = @(x, gamma) quadPrior(x, gamma);
 elseif strcmp(mode, 'huberPrior')
-    alpha = 0.5; % TODO: tune
-    gamma = 0.1; % tuned
+    alpha = al; % TODO: tune
+    gamma = lam; % tuned
     getCost = @(x, gamma) huberPrior(x, gamma);
 elseif strcmp(mode, 'adaPrior')
-    alpha = 0.5; % TODO: tune
-    gamma = 0.1; % TODO: tune
+    alpha = al; % TODO: tune
+    gamma = lam; % TODO: tune
     getCost = @(x, gamma) adaPrior(x, gamma);
 else
     disp('Error: Unknown params received')

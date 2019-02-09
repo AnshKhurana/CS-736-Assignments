@@ -23,13 +23,13 @@ fprintf("The tuned parameters for Huber prior: ");
 alpha_hu = 0.6
 gamma_hu = 0.10
 fprintf("The tuned parameters for Adaptive-Discontinuity prior: ");
-alpha_ada = 0.69
-gamma_ada = 0.05
+alpha_ada = 0.71
+gamma_ada = 0
 
 
-[x_rec_quad, logger_q] = gradDesc(img, img, 'quadPrior', alpha_q, 0.1);
-[x_rec_huber, logger_h] = gradDesc(img, img, 'huberPrior', alpha_hu, 0.1);
-[x_rec_ada, logger_a] = gradDesc(img, img, 'adaPrior', alpha_ada, 0.1);
+[x_rec_quad, logger_q] = gradDesc(img, img, 'quadPrior', 0.5, 0.1);
+[x_rec_huber, logger_h] = gradDesc(img, img, 'huberPrior', 0.5, 0.1);
+[x_rec_ada, logger_a] = gradDesc(img, img, 'adaPrior', 0.5, 0.1);
 
 
 %%
