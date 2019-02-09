@@ -1,6 +1,6 @@
-function [V, G] = complexGauss(Y, X)
+function [nll, grad] = complexGauss(y, x)
+% Negative log-likelihood term
+% y, x: m X n real-valued
 
-d = size(X, 1);
-V = 1/pi^d *  exp(- norm(Y-X));
-G = 2 * (Y - X);
-G = G(:);
+nll = norm(y - x, 'fro');
+grad = 2 * (x - y);
