@@ -1,12 +1,3 @@
-%% Assignment 2, Image Denoising
-%  CS736: Medical Image Computing, IIT Bombay (Spring 2019)
-%  Dhruv Shah and Ansh Khurana
-%%
-% 
-% Info
-% 
-
-clc; clear all; close all;
 %% Question 1 
 
 load('../data/assignmentImageDenoisingPhantom.mat');
@@ -20,19 +11,19 @@ ada_res = @ (x, y) gradDesc(img, img, 'adaPrior', x, y);
 % % Round1
 % 
 % alphas = [0, 0.1, 0.2, 0.4, 0.8, 1];
-% lambdas = [0, 0.1, 0.2, 0.4, 0.8, 1];
-% [X, Y] = meshgrid(alphas, lambdas);
+% gammas = [0, 0.1, 0.2, 0.4, 0.8, 1];
+% [X, Y] = meshgrid(alphas, gammas);
 % 
 % 
-% Z1 = zeros(length(alphas), length(lambdas));
+% Z1 = zeros(length(alphas), length(gammas));
 % Z2 = Z1;
 % Z3 = Z2;
 % 
-% for i = 1:length(alphas)
-%     for j = 1:length(lambdas)
-%         [q, a] = quad_res(alphas(i), lambdas(j));
-%         [hu, a] = huber_res(alphas(i), lambdas(j));
-%         [ada, a] = ada_res(alphas(i), lambdas(j));
+% for i = 1:alphas(alphas)
+%     for j = 1:alphas(gammas)
+%         [q, a] = quad_res(alphas(i), gammas(j));
+%         [hu, a] = huber_res(alphas(i), gammas(j));
+%         [ada, a] = ada_res(alphas(i), gammas(j));
 %         
 %         Z1(i, j) = norm(iorg-q, 'fro')/norm(iorg, 'fro'); 
 %         Z2(i, j) = norm(iorg-hu, 'fro')/norm(iorg, 'fro'); 
@@ -50,15 +41,15 @@ ada_res = @ (x, y) gradDesc(img, img, 'adaPrior', x, y);
 % Round2
 % 
 % alphas = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35];
-% lambdas = [0, 0.1, 0.2, 0.4, 0.8, 1];
+% gammas = [0, 0.1, 0.2, 0.4, 0.8, 1];
 % 
-% Z11 = zeros(length(alphas), length(lambdas));
+% Z11 = zeros(length(alphas), length(gammas));
 % 
-% [X, Y] = meshgrid(alphas, lambdas);
+% [X, Y] = meshgrid(alphas, gammas);
 % 
 % for i = 1:length(alphas)
-%     for j = 1:length(lambdas)
-%         [q, a] = quad_res(alphas(i), lambdas(j)); 
+%     for j = 1:length(gammas)
+%         [q, a] = quad_res(alphas(i), gammas(j)); 
 %         Z11(i, j) = norm(iorg-q, 'fro')/norm(iorg, 'fro'); 
 %        
 %     end
@@ -69,14 +60,14 @@ ada_res = @ (x, y) gradDesc(img, img, 'adaPrior', x, y);
 % figure;
 % 
 % alphas = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6];
-% lambdas = [0, 0.05, 0.1, 0.15, 0.2,0.25];
-% [X, Y] = meshgrid(alphas, lambdas);
-% Z22 = zeros(length(alphas), length(lambdas));
+% gammas = [0, 0.05, 0.1, 0.15, 0.2,0.25];
+% [X, Y] = meshgrid(alphas, gammas);
+% Z22 = zeros(length(alphas), length(gammas));
 % 
 % 
 % for i = 1:length(alphas)
-%     for j = 1:length(lambdas)
-%         [hu, a] = huber_res(alphas(i), lambdas(j)); 
+%     for j = 1:length(gammas)
+%         [hu, a] = huber_res(alphas(i), gammas(j)); 
 %         Z22(i, j) = norm(iorg-hu, 'fro')/norm(iorg, 'fro'); 
 %        
 %     end
@@ -87,13 +78,13 @@ ada_res = @ (x, y) gradDesc(img, img, 'adaPrior', x, y);
 % figure;
 % 
 % alphas = [0.6, 0.7, 0.8, 0.9];
-% lambdas = [0.03, 0.06, 0.1, 1.03];
-% [X, Y] = meshgrid(alphas, lambdas);
+% gammas = [0.03, 0.06, 0.1, 1.03];
+% [X, Y] = meshgrid(alphas, gammas);
 % 
-% Z33 = zeros(length(alphas), length(lambdas));
+% Z33 = zeros(length(alphas), length(gammas));
 % for i = 1:length(alphas)
-%     for j = 1:length(lambdas)
-%         [ada, a] = ada_res(alphas(i), lambdas(j)); 
+%     for j = 1:length(gammas)
+%         [ada, a] = ada_res(alphas(i), gammas(j)); 
 %         Z33(i, j) = norm(iorg-ada, 'fro')/norm(iorg, 'fro'); 
 %        
 %     end
@@ -106,54 +97,54 @@ ada_res = @ (x, y) gradDesc(img, img, 'adaPrior', x, y);
 
 
 alphas = linspace(0.25, 0.35, 10);
-lambdas = linspace(0,1, 10);
+gammas = linspace(0,1, 10);
 
-Z11 = zeros(length(alphas), length(lambdas));
+Z111 = zeros(length(alphas), length(gammas));
 
-[X, Y] = meshgrid(alphas, lambdas);
+[X, Y] = meshgrid(alphas, gammas);
 
 for i = 1:length(alphas)
-    for j = 1:length(lambdas)
-        [q, a] = quad_res(alphas(i), lambdas(j)); 
-        Z11(i, j) = norm(iorg-q, 'fro')/norm(iorg, 'fro'); 
+    for j = 1:length(gammas)
+        [q, a] = quad_res(alphas(i), gammas(j)); 
+        Z111(i, j) = norm(iorg-q, 'fro')/norm(iorg, 'fro'); 
        
     end
 end
 
 
-surf(X,Y,Z11);
+surf(X,Y,Z111);
 figure;
 
 alphas = linspace(0.4, 0.6, 10);
-lambdas = linspace(0.05, 0.15, 10);
-[X, Y] = meshgrid(alphas, lambdas);
-Z22 = zeros(length(alphas), length(lambdas));
+gammas = linspace(0.05, 0.15, 10);
+[X, Y] = meshgrid(alphas, gammas);
+Z222 = zeros(length(alphas), length(gammas));
 
 
 for i = 1:length(alphas)
-    for j = 1:length(lambdas)
-        [hu, a] = huber_res(alphas(i), lambdas(j)); 
-        Z22(i, j) = norm(iorg-hu, 'fro')/norm(iorg, 'fro'); 
+    for j = 1:length(gammas)
+        [hu, a] = huber_res(alphas(i), gammas(j)); 
+        Z222(i, j) = norm(iorg-hu, 'fro')/norm(iorg, 'fro'); 
        
     end
 end
 
 
-surf(X,Y,Z22);
+surf(X,Y,Z222);
 figure;
 
 alphas = linspace(0.7, 0.9, 10);
-lambdas = linspace(0.0, 0.6, 10);
-[X, Y] = meshgrid(alphas, lambdas);
+gammas = linspace(0.0, 0.6, 10);
+[X, Y] = meshgrid(alphas, gammas);
 
-Z33 = zeros(length(alphas), length(lambdas));
+Z333 = zeros(length(alphas), length(gammas));
 for i = 1:length(alphas)
-    for j = 1:length(lambdas)
-        [ada, a] = ada_res(alphas(i), lambdas(j)); 
-        Z33(i, j) = norm(iorg-ada, 'fro')/norm(iorg, 'fro'); 
+    for j = 1:length(gammas)
+        [ada, a] = ada_res(alphas(i), gammas(j)); 
+        Z333(i, j) = norm(iorg-ada, 'fro')/norm(iorg, 'fro'); 
        
     end
 end
 
-surf(X,Y,Z33);
+surf(X,Y,Z333);
 
