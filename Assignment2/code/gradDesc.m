@@ -19,7 +19,7 @@ else
     disp('Error: Unknown params received')
 end
 
-step_size = 1e-1;
+step_size = 1e-6;
 step_size_thresh = 1e-8;
 step_size_inc = 1.1; step_size_dec = 0.5;
 max_iter = 1000;

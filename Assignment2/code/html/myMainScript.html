@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>Assignment 2, Image Denoising</h1><!--introduction--><pre>CS736: Medical Image Computing, IIT Bombay (Spring 2019)
-Dhruv Shah and Ansh Khurana</pre><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Question 1</a></li><li><a href="#3">Question 2</a></li></ul></div><p>Images are de-noised using the maximum a-posteriori Bayesian image-denoising algorithm that uses a noise model coupled with a MRF prior that uses a 4 -neighbor neighborhood system</p><pre class="codeinput">clc; clear <span class="string">all</span>; close <span class="string">all</span>;
+Dhruv Shah and Ansh Khurana</pre><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Question 1</a></li><li><a href="#3">Question 2</a></li></ul></div><p>Images are de-noised using the maximum a-posteriori Bayesian image-denoising algorithm that uses a noise model coupled with a MRF prior that uses a 4 -neighbor neighborhood system</p><p>Implementation of potential function 'g' can be found in 'huberPrior.m', 'quadPrior' and 'adaPrior.m'.</p><pre class="codeinput">clc; clear <span class="string">all</span>; close <span class="string">all</span>;
 </pre><h2 id="2">Question 1</h2><pre class="codeinput">load(<span class="string">'../data/assignmentImageDenoisingPhantom.mat'</span>);
 img = real(imageNoisy); iorg = imageNoiseless;
 
@@ -83,8 +83,8 @@ fprintf(<span class="string">"The tuned parameters for Huber prior: "</span>);
 alpha_hu = 0.6
 gamma_hu = 0.10
 fprintf(<span class="string">"The tuned parameters for Adaptive-Discontinuity prior: "</span>);
-alpha_ada = 0.69
-gamma_ada = 0.05
+alpha_ada = 0.82
+gamma_ada = 0.027
 
 <span class="comment">% Evidence of optimality:</span>
 
@@ -110,7 +110,7 @@ fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for 0.8
 [huber_b0_8, d] = gradDesc(img, img, <span class="string">'huberPrior'</span>, alpha_hu, gamma_hu*0.8);
 
 
-fprintf(<span class="string">'%s\n'</span>, <span class="string">"MSE for 1.2a*, b* (for huberPrior): "</span> +  num2str(norm(iorg-huber_a1_2, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
+fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for 1.2a*, b* (for huberPrior): "</span> +  num2str(norm(iorg-huber_a1_2, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
 fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for 0.8a*, b* (for huberPrior): "</span> +  num2str(norm(iorg-huber_a0_8, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
 fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for a*, 1.2b* (for huberPrior): "</span> +  num2str(norm(iorg-huber_b1_2, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
 fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for a*, 0.8b* (for huberPrior): "</span> +  num2str(norm(iorg-huber_b0_8, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
@@ -187,26 +187,26 @@ gamma_hu =
 The tuned parameters for Adaptive-Discontinuity prior: 
 alpha_ada =
 
-    0.6900
+    0.8200
 
 
 gamma_ada =
 
-    0.0500
+    0.0270
 
-RRMSE for optimal parameter a* (for quadPrior): 0.18177
+RRMSE for optimal parameter a* (for quadPrior): 0.1854
 RRMSE for 1.2a* (for quadPrior): 0.21041
-RRMSE for 0.8a* (for quadPrior): 0.19821
-MSE for 1.2a*, b* (for huberPrior): 0.18396
-RRMSE for 0.8a*, b* (for huberPrior): 0.20123
-RRMSE for a*, 1.2b* (for huberPrior): 0.11294
-RRMSE for a*, 0.8b* (for huberPrior): 0.19863
-RRMSE for optimal parameters a*, b* (for adaPrior): 0.19247
-RRMSE for 1.2a*, b* (for adaPrior): 0.1022
-RRMSE for 0.8a*, b* (for adaPrior): 0.13059
-RRMSE for a*, 1.2b* (for adaPrior): 0.10276
-RRMSE for a*, 0.8b* (for adaPrior): 0.10465
-</pre><h2 id="3">Question 2</h2><pre class="codeinput">load(<span class="string">'../data/assignmentImageDenoisingBrainNoisy.mat'</span>);
+RRMSE for 0.8a* (for quadPrior): 0.23823
+RRMSE for 1.2a*, b* (for huberPrior): 0.23823
+RRMSE for 0.8a*, b* (for huberPrior): 0.23823
+RRMSE for a*, 1.2b* (for huberPrior): 0.23823
+RRMSE for a*, 0.8b* (for huberPrior): 0.23823
+RRMSE for optimal parameters a*, b* (for adaPrior): 0.23823
+RRMSE for 1.2a*, b* (for adaPrior): 0.1471
+RRMSE for 0.8a*, b* (for adaPrior): 0.12447
+RRMSE for a*, 1.2b* (for adaPrior): 0.086731
+RRMSE for a*, 0.8b* (for adaPrior): 0.085032
+</pre><img vspace="5" hspace="5" src="myMainScript_01.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_02.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_03.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_04.png" alt=""> <h2 id="3">Question 2</h2><pre class="codeinput">load(<span class="string">'../data/assignmentImageDenoisingBrainNoisy.mat'</span>);
 img = real(imageNoisy);
 <span class="comment">% Part a</span>
 c_img = imag(imageNoisy);
@@ -215,7 +215,7 @@ std_r = sqrt(cov(img(:)'))
 fprintf(<span class="string">"The standard deviation of noise in complex part is: "</span>);
 std_c = sqrt(cov(c_img(:)'))
 
-<span class="comment">% Part 2c.</span>
+<span class="comment">% Part b.</span>
 fprintf(<span class="string">"The tuned parameters for quad prior: "</span>);
 alpha_q = 0.59
 fprintf(<span class="string">"The tuned parameters for Huber prior: "</span>);
@@ -260,15 +260,54 @@ plot(logger_a(:, 1));
 title(<span class="string">"2c. Objective function vs number of iterations (adaPrior)"</span>);
 ylabel(<span class="string">"Objective function"</span>);
 xlabel(<span class="string">"No. of iterations"</span>);
-</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+</pre><pre class="codeoutput">The standard deviation of noise in real part is: 
+std_r =
+
+    0.2833
+
+The standard deviation of noise in complex part is: 
+std_c =
+
+    0.0585
+
+The tuned parameters for quad prior: 
+alpha_q =
+
+    0.5900
+
+The tuned parameters for Huber prior: 
+alpha_hu =
+
+    0.5000
+
+
+gamma_hu =
+
+    0.1375
+
+The tuned parameters for Adaptive-Discontinuity prior: 
+alpha_ada =
+
+    0.8000
+
+
+gamma_ada =
+
+    0.0500
+
+</pre><img vspace="5" hspace="5" src="myMainScript_05.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_06.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_07.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_08.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Assignment 2, Image Denoising
 %  CS736: Medical Image Computing, IIT Bombay (Spring 2019)
 %  Dhruv Shah and Ansh Khurana
 %%
-% Images are de-noised using the maximum a-posteriori Bayesian image-denoising algorithm that uses a noise model coupled with a MRF prior that uses a 4 -neighbor neighborhood system
+% Images are de-noised using the maximum a-posteriori Bayesian image-denoising 
+% algorithm that uses a noise model coupled with a MRF prior that uses a 4 -neighbor neighborhood 
+% system
 % 
-% 
+% Implementation of potential function 'g' can be found in 'huberPrior.m',
+% 'quadPrior' and 'adaPrior.m'.
+%  
 
 clc; clear all; close all;
 %% Question 1 
@@ -288,8 +327,8 @@ fprintf("The tuned parameters for Huber prior: ");
 alpha_hu = 0.6
 gamma_hu = 0.10
 fprintf("The tuned parameters for Adaptive-Discontinuity prior: ");
-alpha_ada = 0.69
-gamma_ada = 0.05
+alpha_ada = 0.82
+gamma_ada = 0.027
 
 % Evidence of optimality: 
 
@@ -315,7 +354,7 @@ fprintf('%s\n',  "RRMSE for 0.8a* (for quadPrior): " +  num2str(norm(iorg-quad_a
 [huber_b0_8, d] = gradDesc(img, img, 'huberPrior', alpha_hu, gamma_hu*0.8);
 
 
-fprintf('%s\n', "MSE for 1.2a*, b* (for huberPrior): " +  num2str(norm(iorg-huber_a1_2, 'fro')/norm(iorg, 'fro')));
+fprintf('%s\n',  "RRMSE for 1.2a*, b* (for huberPrior): " +  num2str(norm(iorg-huber_a1_2, 'fro')/norm(iorg, 'fro')));
 fprintf('%s\n',  "RRMSE for 0.8a*, b* (for huberPrior): " +  num2str(norm(iorg-huber_a0_8, 'fro')/norm(iorg, 'fro')));
 fprintf('%s\n',  "RRMSE for a*, 1.2b* (for huberPrior): " +  num2str(norm(iorg-huber_b1_2, 'fro')/norm(iorg, 'fro')));
 fprintf('%s\n',  "RRMSE for a*, 0.8b* (for huberPrior): " +  num2str(norm(iorg-huber_b0_8, 'fro')/norm(iorg, 'fro')));
@@ -380,7 +419,7 @@ std_r = sqrt(cov(img(:)'))
 fprintf("The standard deviation of noise in complex part is: ");
 std_c = sqrt(cov(c_img(:)'))
 
-% Part 2c.  
+% Part b.  
 fprintf("The tuned parameters for quad prior: ");
 alpha_q = 0.59
 fprintf("The tuned parameters for Huber prior: ");
