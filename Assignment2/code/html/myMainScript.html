@@ -1,0 +1,431 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Assignment 2, Image Denoising</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-02-10"><meta name="DC.source" content="myMainScript.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Assignment 2, Image Denoising</h1><!--introduction--><pre>CS736: Medical Image Computing, IIT Bombay (Spring 2019)
+Dhruv Shah and Ansh Khurana</pre><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Question 1</a></li><li><a href="#3">Question 2</a></li></ul></div><p>Images are de-noised using the maximum a-posteriori Bayesian image-denoising algorithm that uses a noise model coupled with a MRF prior that uses a 4 -neighbor neighborhood system</p><pre class="codeinput">clc; clear <span class="string">all</span>; close <span class="string">all</span>;
+</pre><h2 id="2">Question 1</h2><pre class="codeinput">load(<span class="string">'../data/assignmentImageDenoisingPhantom.mat'</span>);
+img = real(imageNoisy); iorg = imageNoiseless;
+
+<span class="comment">% Part a.</span>
+Initial_RRMSE = norm(iorg-img, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)
+
+
+<span class="comment">% Part b.</span>
+
+fprintf(<span class="string">"The tuned parameters for quad prior: "</span>);
+alpha_q = 0.29
+fprintf(<span class="string">"The tuned parameters for Huber prior: "</span>);
+alpha_hu = 0.6
+gamma_hu = 0.10
+fprintf(<span class="string">"The tuned parameters for Adaptive-Discontinuity prior: "</span>);
+alpha_ada = 0.69
+gamma_ada = 0.05
+
+<span class="comment">% Evidence of optimality:</span>
+
+
+[x_rec_quad, logger_q] = gradDesc(img, img, <span class="string">'quadPrior'</span>, alpha_q, 0.1);
+[x_rec_huber, logger_h] = gradDesc(img, img, <span class="string">'huberPrior'</span>, alpha_hu, gamma_hu);
+[x_rec_ada, logger_a] = gradDesc(img, img, <span class="string">'adaPrior'</span>, alpha_ada, gamma_ada);
+
+<span class="comment">% For quad</span>
+
+[quad_a1_2, d] = gradDesc(img, img, <span class="string">'quadPrior'</span>, alpha_q*1.2, 0.1);
+[quad_a0_8, d] = gradDesc(img, img, <span class="string">'quadPrior'</span>, alpha_q*0.8, 0.1);
+fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for optimal parameter a* (for quadPrior): "</span> +  num2str(norm(iorg-x_rec_quad, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
+fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for 1.2a* (for quadPrior): "</span> +  num2str(norm(iorg-quad_a1_2, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
+fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for 0.8a* (for quadPrior): "</span> +  num2str(norm(iorg-quad_a0_8, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
+
+
+<span class="comment">% For Huber</span>
+
+[huber_a1_2, d] = gradDesc(img, img, <span class="string">'huberPrior'</span>, alpha_hu*1.2, gamma_hu);
+[huber_a0_8, d] = gradDesc(img, img, <span class="string">'huberPrior'</span>, alpha_hu*0.8, gamma_hu);
+[huber_b1_2, d] = gradDesc(img, img, <span class="string">'huberPrior'</span>, alpha_hu, gamma_hu*1.2);
+[huber_b0_8, d] = gradDesc(img, img, <span class="string">'huberPrior'</span>, alpha_hu, gamma_hu*0.8);
+
+
+fprintf(<span class="string">'%s\n'</span>, <span class="string">"MSE for 1.2a*, b* (for huberPrior): "</span> +  num2str(norm(iorg-huber_a1_2, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
+fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for 0.8a*, b* (for huberPrior): "</span> +  num2str(norm(iorg-huber_a0_8, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
+fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for a*, 1.2b* (for huberPrior): "</span> +  num2str(norm(iorg-huber_b1_2, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
+fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for a*, 0.8b* (for huberPrior): "</span> +  num2str(norm(iorg-huber_b0_8, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
+
+
+<span class="comment">% For ada</span>
+
+[ada_a1_2, d] = gradDesc(img, img, <span class="string">'adaPrior'</span>, alpha_ada*1.2, gamma_ada);
+[ada_a0_8, d] = gradDesc(img, img, <span class="string">'adaPrior'</span>, alpha_ada*0.8, gamma_ada);
+[ada_b1_2, d] = gradDesc(img, img, <span class="string">'adaPrior'</span>, alpha_ada, gamma_ada*1.2);
+[ada_b0_8, d] = gradDesc(img, img, <span class="string">'adaPrior'</span>, alpha_ada, gamma_ada*0.8);
+
+
+fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for optimal parameters a*, b* (for adaPrior): "</span> +  num2str(norm(iorg-x_rec_huber, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
+fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for 1.2a*, b* (for adaPrior): "</span> +  num2str(norm(iorg-ada_a1_2, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
+fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for 0.8a*, b* (for adaPrior): "</span> +  num2str(norm(iorg-ada_a0_8, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
+fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for a*, 1.2b* (for adaPrior): "</span> +  num2str(norm(iorg-ada_b1_2, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
+fprintf(<span class="string">'%s\n'</span>,  <span class="string">"RRMSE for a*, 0.8b* (for adaPrior): "</span> +  num2str(norm(iorg-ada_b0_8, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)));
+
+<span class="comment">% Part c.</span>
+figure(<span class="string">'Position'</span>, [100, -50, 500, 700]);
+subplot(3, 2, 1);
+imagesc(iorg); caxis([-0.3, 1.3]);
+title(<span class="string">'Original Noiseless'</span>)
+subplot(3, 2, 3);
+imagesc(img); caxis([-0.3, 1.3]);
+title({<span class="string">'Original Noisy'</span>, strcat(<span class="string">'RRMSE: '</span>, num2str(norm(iorg-img, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)))});
+subplot(3, 2, 4);
+imagesc(x_rec_quad); caxis([-0.3, 1.3]);
+title({<span class="string">'Quadratic Loss'</span>, strcat(<span class="string">'RRMSE: '</span>, num2str(norm(iorg-x_rec_quad, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)))});
+subplot(3, 2, 5);
+imagesc(x_rec_huber); caxis([-0.3, 1.3]);
+title({<span class="string">'Huber Loss'</span>, strcat(<span class="string">'RRMSE: '</span>, num2str(norm(iorg-x_rec_huber, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)))});
+subplot(3, 2, 6);
+imagesc(x_rec_ada); caxis([-0.3, 1.3]);
+title({<span class="string">'Adaptive Loss'</span>, strcat(<span class="string">'RRMSE: '</span>, num2str(norm(iorg-x_rec_ada, <span class="string">'fro'</span>)/norm(iorg, <span class="string">'fro'</span>)))});
+
+<span class="comment">% Part d.</span>
+figure;
+plot(logger_q(:, 1));
+title(<span class="string">"1d. Objective function vs number of iterations (quadPrior)"</span>);
+ylabel(<span class="string">"Objective function"</span>);
+xlabel(<span class="string">"No. of iterations"</span>);
+figure;
+plot(logger_h(:, 1));
+title(<span class="string">"1d. Objective function vs number of iterations (huberPrior)"</span>);
+ylabel(<span class="string">"Objective function"</span>);
+xlabel(<span class="string">"No. of iterations"</span>);
+figure;
+plot(logger_a(:, 1));
+title(<span class="string">"1d. Objective function vs number of iterations (adaPrior)"</span>);
+ylabel(<span class="string">"Objective function"</span>);
+xlabel(<span class="string">"No. of iterations"</span>);
+</pre><pre class="codeoutput">
+Initial_RRMSE =
+
+    0.2382
+
+The tuned parameters for quad prior: 
+alpha_q =
+
+    0.2900
+
+The tuned parameters for Huber prior: 
+alpha_hu =
+
+    0.6000
+
+
+gamma_hu =
+
+    0.1000
+
+The tuned parameters for Adaptive-Discontinuity prior: 
+alpha_ada =
+
+    0.6900
+
+
+gamma_ada =
+
+    0.0500
+
+RRMSE for optimal parameter a* (for quadPrior): 0.18177
+RRMSE for 1.2a* (for quadPrior): 0.21041
+RRMSE for 0.8a* (for quadPrior): 0.19821
+MSE for 1.2a*, b* (for huberPrior): 0.18396
+RRMSE for 0.8a*, b* (for huberPrior): 0.20123
+RRMSE for a*, 1.2b* (for huberPrior): 0.11294
+RRMSE for a*, 0.8b* (for huberPrior): 0.19863
+RRMSE for optimal parameters a*, b* (for adaPrior): 0.19247
+RRMSE for 1.2a*, b* (for adaPrior): 0.1022
+RRMSE for 0.8a*, b* (for adaPrior): 0.13059
+RRMSE for a*, 1.2b* (for adaPrior): 0.10276
+RRMSE for a*, 0.8b* (for adaPrior): 0.10465
+</pre><h2 id="3">Question 2</h2><pre class="codeinput">load(<span class="string">'../data/assignmentImageDenoisingBrainNoisy.mat'</span>);
+img = real(imageNoisy);
+<span class="comment">% Part a</span>
+c_img = imag(imageNoisy);
+fprintf(<span class="string">"The standard deviation of noise in real part is: "</span>);
+std_r = sqrt(cov(img(:)'))
+fprintf(<span class="string">"The standard deviation of noise in complex part is: "</span>);
+std_c = sqrt(cov(c_img(:)'))
+
+<span class="comment">% Part 2c.</span>
+fprintf(<span class="string">"The tuned parameters for quad prior: "</span>);
+alpha_q = 0.59
+fprintf(<span class="string">"The tuned parameters for Huber prior: "</span>);
+alpha_hu = 0.5
+gamma_hu = 0.1375
+fprintf(<span class="string">"The tuned parameters for Adaptive-Discontinuity prior: "</span>);
+alpha_ada = 0.8
+gamma_ada = 0.05
+
+[x_rec_quad, logger_q] = gradDesc(img, img, <span class="string">'quadPrior'</span>, alpha_q, 0.1);
+[x_rec_huber, logger_h] = gradDesc(img, img, <span class="string">'huberPrior'</span>, alpha_hu, gamma_hu);
+[x_rec_ada, logger_a] = gradDesc(img, img, <span class="string">'adaPrior'</span>, alpha_ada, gamma_ada);
+
+figure(<span class="string">'Position'</span>, [100, -50, 500, 700]);
+subplot(2, 2, 1);
+imagesc(img); caxis([-0.3, 1.3]);
+title({<span class="string">'Original Noisy'</span>});
+subplot(2, 2, 2);
+imagesc(x_rec_quad); caxis([-0.3, 1.3]);
+title({<span class="string">'Quadratic Loss'</span>});
+subplot(2, 2, 3);
+imagesc(x_rec_huber); caxis([-0.3, 1.3]);
+title({<span class="string">'Huber Loss'</span>});
+subplot(2, 2, 4);
+imagesc(x_rec_ada); caxis([-0.3, 1.3]);
+title({<span class="string">'Adaptive Loss'</span>});
+
+
+<span class="comment">% Part c.</span>
+figure;
+plot(logger_q(:, 1));
+title(<span class="string">"2c. Objective function vs number of iterations (quadPrior)"</span>);
+ylabel(<span class="string">"Objective function"</span>);
+xlabel(<span class="string">"No. of iterations"</span>);
+figure;
+plot(logger_h(:, 1));
+title(<span class="string">"2c. Objective function vs number of iterations (huberPrior)"</span>);
+ylabel(<span class="string">"Objective function"</span>);
+xlabel(<span class="string">"No. of iterations"</span>);
+figure;
+plot(logger_a(:, 1));
+title(<span class="string">"2c. Objective function vs number of iterations (adaPrior)"</span>);
+ylabel(<span class="string">"Objective function"</span>);
+xlabel(<span class="string">"No. of iterations"</span>);
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Assignment 2, Image Denoising
+%  CS736: Medical Image Computing, IIT Bombay (Spring 2019)
+%  Dhruv Shah and Ansh Khurana
+%%
+% Images are de-noised using the maximum a-posteriori Bayesian image-denoising algorithm that uses a noise model coupled with a MRF prior that uses a 4 -neighbor neighborhood system
+% 
+% 
+
+clc; clear all; close all;
+%% Question 1 
+
+load('../data/assignmentImageDenoisingPhantom.mat');
+img = real(imageNoisy); iorg = imageNoiseless;
+
+% Part a. 
+Initial_RRMSE = norm(iorg-img, 'fro')/norm(iorg, 'fro')
+
+
+% Part b.
+
+fprintf("The tuned parameters for quad prior: ");
+alpha_q = 0.29
+fprintf("The tuned parameters for Huber prior: ");
+alpha_hu = 0.6
+gamma_hu = 0.10
+fprintf("The tuned parameters for Adaptive-Discontinuity prior: ");
+alpha_ada = 0.69
+gamma_ada = 0.05
+
+% Evidence of optimality: 
+
+
+[x_rec_quad, logger_q] = gradDesc(img, img, 'quadPrior', alpha_q, 0.1);
+[x_rec_huber, logger_h] = gradDesc(img, img, 'huberPrior', alpha_hu, gamma_hu);
+[x_rec_ada, logger_a] = gradDesc(img, img, 'adaPrior', alpha_ada, gamma_ada);
+
+% For quad
+
+[quad_a1_2, d] = gradDesc(img, img, 'quadPrior', alpha_q*1.2, 0.1);
+[quad_a0_8, d] = gradDesc(img, img, 'quadPrior', alpha_q*0.8, 0.1);
+fprintf('%s\n',  "RRMSE for optimal parameter a* (for quadPrior): " +  num2str(norm(iorg-x_rec_quad, 'fro')/norm(iorg, 'fro')));
+fprintf('%s\n',  "RRMSE for 1.2a* (for quadPrior): " +  num2str(norm(iorg-quad_a1_2, 'fro')/norm(iorg, 'fro')));
+fprintf('%s\n',  "RRMSE for 0.8a* (for quadPrior): " +  num2str(norm(iorg-quad_a0_8, 'fro')/norm(iorg, 'fro')));
+
+
+% For Huber
+
+[huber_a1_2, d] = gradDesc(img, img, 'huberPrior', alpha_hu*1.2, gamma_hu);
+[huber_a0_8, d] = gradDesc(img, img, 'huberPrior', alpha_hu*0.8, gamma_hu);
+[huber_b1_2, d] = gradDesc(img, img, 'huberPrior', alpha_hu, gamma_hu*1.2);
+[huber_b0_8, d] = gradDesc(img, img, 'huberPrior', alpha_hu, gamma_hu*0.8);
+
+
+fprintf('%s\n', "MSE for 1.2a*, b* (for huberPrior): " +  num2str(norm(iorg-huber_a1_2, 'fro')/norm(iorg, 'fro')));
+fprintf('%s\n',  "RRMSE for 0.8a*, b* (for huberPrior): " +  num2str(norm(iorg-huber_a0_8, 'fro')/norm(iorg, 'fro')));
+fprintf('%s\n',  "RRMSE for a*, 1.2b* (for huberPrior): " +  num2str(norm(iorg-huber_b1_2, 'fro')/norm(iorg, 'fro')));
+fprintf('%s\n',  "RRMSE for a*, 0.8b* (for huberPrior): " +  num2str(norm(iorg-huber_b0_8, 'fro')/norm(iorg, 'fro')));
+
+
+% For ada
+
+[ada_a1_2, d] = gradDesc(img, img, 'adaPrior', alpha_ada*1.2, gamma_ada);
+[ada_a0_8, d] = gradDesc(img, img, 'adaPrior', alpha_ada*0.8, gamma_ada);
+[ada_b1_2, d] = gradDesc(img, img, 'adaPrior', alpha_ada, gamma_ada*1.2);
+[ada_b0_8, d] = gradDesc(img, img, 'adaPrior', alpha_ada, gamma_ada*0.8);
+
+
+fprintf('%s\n',  "RRMSE for optimal parameters a*, b* (for adaPrior): " +  num2str(norm(iorg-x_rec_huber, 'fro')/norm(iorg, 'fro')));
+fprintf('%s\n',  "RRMSE for 1.2a*, b* (for adaPrior): " +  num2str(norm(iorg-ada_a1_2, 'fro')/norm(iorg, 'fro')));
+fprintf('%s\n',  "RRMSE for 0.8a*, b* (for adaPrior): " +  num2str(norm(iorg-ada_a0_8, 'fro')/norm(iorg, 'fro')));
+fprintf('%s\n',  "RRMSE for a*, 1.2b* (for adaPrior): " +  num2str(norm(iorg-ada_b1_2, 'fro')/norm(iorg, 'fro')));
+fprintf('%s\n',  "RRMSE for a*, 0.8b* (for adaPrior): " +  num2str(norm(iorg-ada_b0_8, 'fro')/norm(iorg, 'fro')));
+
+% Part c.
+figure('Position', [100, -50, 500, 700]);
+subplot(3, 2, 1);
+imagesc(iorg); caxis([-0.3, 1.3]);
+title('Original Noiseless')
+subplot(3, 2, 3);
+imagesc(img); caxis([-0.3, 1.3]);
+title({'Original Noisy', strcat('RRMSE: ', num2str(norm(iorg-img, 'fro')/norm(iorg, 'fro')))});
+subplot(3, 2, 4);
+imagesc(x_rec_quad); caxis([-0.3, 1.3]);
+title({'Quadratic Loss', strcat('RRMSE: ', num2str(norm(iorg-x_rec_quad, 'fro')/norm(iorg, 'fro')))});
+subplot(3, 2, 5);
+imagesc(x_rec_huber); caxis([-0.3, 1.3]);
+title({'Huber Loss', strcat('RRMSE: ', num2str(norm(iorg-x_rec_huber, 'fro')/norm(iorg, 'fro')))});
+subplot(3, 2, 6);
+imagesc(x_rec_ada); caxis([-0.3, 1.3]);
+title({'Adaptive Loss', strcat('RRMSE: ', num2str(norm(iorg-x_rec_ada, 'fro')/norm(iorg, 'fro')))});
+
+% Part d.
+figure;
+plot(logger_q(:, 1));
+title("1d. Objective function vs number of iterations (quadPrior)");
+ylabel("Objective function");
+xlabel("No. of iterations");
+figure;
+plot(logger_h(:, 1));
+title("1d. Objective function vs number of iterations (huberPrior)");
+ylabel("Objective function");
+xlabel("No. of iterations");
+figure;
+plot(logger_a(:, 1));
+title("1d. Objective function vs number of iterations (adaPrior)");
+ylabel("Objective function");
+xlabel("No. of iterations");
+
+%% Question 2
+load('../data/assignmentImageDenoisingBrainNoisy.mat');
+img = real(imageNoisy);
+% Part a
+c_img = imag(imageNoisy);
+fprintf("The standard deviation of noise in real part is: ");
+std_r = sqrt(cov(img(:)'))
+fprintf("The standard deviation of noise in complex part is: ");
+std_c = sqrt(cov(c_img(:)'))
+
+% Part 2c.  
+fprintf("The tuned parameters for quad prior: ");
+alpha_q = 0.59
+fprintf("The tuned parameters for Huber prior: ");
+alpha_hu = 0.5
+gamma_hu = 0.1375
+fprintf("The tuned parameters for Adaptive-Discontinuity prior: ");
+alpha_ada = 0.8
+gamma_ada = 0.05
+
+[x_rec_quad, logger_q] = gradDesc(img, img, 'quadPrior', alpha_q, 0.1);
+[x_rec_huber, logger_h] = gradDesc(img, img, 'huberPrior', alpha_hu, gamma_hu);
+[x_rec_ada, logger_a] = gradDesc(img, img, 'adaPrior', alpha_ada, gamma_ada);
+
+figure('Position', [100, -50, 500, 700]);
+subplot(2, 2, 1);
+imagesc(img); caxis([-0.3, 1.3]);
+title({'Original Noisy'});
+subplot(2, 2, 2);
+imagesc(x_rec_quad); caxis([-0.3, 1.3]);
+title({'Quadratic Loss'});
+subplot(2, 2, 3);
+imagesc(x_rec_huber); caxis([-0.3, 1.3]);
+title({'Huber Loss'});
+subplot(2, 2, 4);
+imagesc(x_rec_ada); caxis([-0.3, 1.3]);
+title({'Adaptive Loss'});
+
+
+% Part c.
+figure;
+plot(logger_q(:, 1));
+title("2c. Objective function vs number of iterations (quadPrior)");
+ylabel("Objective function");
+xlabel("No. of iterations");
+figure;
+plot(logger_h(:, 1));
+title("2c. Objective function vs number of iterations (huberPrior)");
+ylabel("Objective function");
+xlabel("No. of iterations");
+figure;
+plot(logger_a(:, 1));
+title("2c. Objective function vs number of iterations (adaPrior)");
+ylabel("Objective function");
+xlabel("No. of iterations");
+
+
+##### SOURCE END #####
+--></body></html>

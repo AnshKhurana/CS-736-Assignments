@@ -2,8 +2,8 @@
 %  CS736: Medical Image Computing, IIT Bombay (Spring 2019)
 %  Dhruv Shah and Ansh Khurana
 %%
-% Images are de-noised using the maximum a-posteriori Bayesian image-denoising algorithm that uses a noise model coupled with a MRF prior that uses a 4 -neighbor neighborhood system
 % 
+% Info
 % 
 
 clc; clear all; close all;
@@ -109,12 +109,6 @@ xlabel("No. of iterations");
 %% Question 2
 load('../data/assignmentImageDenoisingBrainNoisy.mat');
 img = real(imageNoisy);
-% Part a
-c_img = imag(imageNoisy);
-fprintf("The standard deviation of noise in real part is: ");
-std_r = sqrt(cov(img(:)'))
-fprintf("The standard deviation of noise in complex part is: ");
-std_c = sqrt(cov(c_img(:)'))
 
 % Part 2c.  
 fprintf("The tuned parameters for quad prior: ");
