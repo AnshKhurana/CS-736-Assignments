@@ -50,9 +50,18 @@ subplot(3, 2, 6);
 imagesc(x_rec_ada); caxis([-0.3, 1.3]);
 title({'Adaptive Loss', strcat('RRMSE: ', num2str(norm(iorg-x_rec_ada, 'fro')/norm(iorg, 'fro')))});
 %% Question 2
-
 load('../data/assignmentImageDenoisingBrainNoisy.mat');
 img = real(imageNoisy);
+
+fprintf("The tuned parameters for quad prior: ");
+alpha_q = 0.59
+fprintf("The tuned parameters for Huber prior: ");
+alpha_hu = 
+gamma_hu = 
+fprintf("The tuned parameters for Adaptive-Discontinuity prior: ");
+alpha_ada = 
+gamma_ada = 
+
 [x_rec_quad, logger_q] = gradDesc(img, img, 'quadPrior', 0.5, 0.1);
 [x_rec_huber, logger_h] = gradDesc(img, img, 'huberPrior', 0.5, 0.1);
 [x_rec_ada, logger_a] = gradDesc(img, img, 'adaPrior', 0.5, 0.1);
