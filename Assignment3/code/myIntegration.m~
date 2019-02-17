@@ -1,0 +1,17 @@
+function z = myIntegration(img, t, theta, step)
+% Returns the integral of interpolated values along the line L(t, theta)
+% Calculating the lower Darboux sum for convenience
+
+[Y, X] = size(img);
+O = [X/2, Y/2];
+
+st = sin(theta);
+ct = cos(theta);
+
+lower_limit = 1/ct * (Y/2 - 1 - t*st);
+upper_limit = 1/ct * (-Y/2 - t*st);
+
+I = 0;
+for s = lower
+
+
