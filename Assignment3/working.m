@@ -43,3 +43,51 @@ for filt_type = modes
     subplot(1, 2, 2); imagesc(imdec_ours2);
     title(strcat(char(filt_type), '(L = w_{max} / 2)'));
 end
+
+%% Part (b)
+
+g1 = fspecial('gaussian', 11, 1);
+g5 = fspecial('gaussian', 51, 5);
+
+img1 = conv2(img, g1, 'same');
+img5 = conv2(img, g5, 'same');
+
+imrad1 = radon(img1, theta);
+imrad5 = radon(img5, theta);
+
+imfilt = myFilter(imrad, 'Ram-Lak', 1);
+imfilt1 = myFilter(imrad1, 'Ram-Lak', 1);
+imfilt5 = myFilter(imrad5, 'Ram-Lak', 1);
+
+imdec = iradon(imfilt, theta, 'linear', 'None', 1, imsize);
+imdec1 = iradon(imfilt1, theta, 'linear', 'None', 1, imsize);
+imdec5 = iradon(imfilt5, theta, 'linear', 'None', 1, imsize);
+
+rrmse_0 = rrmse(img, imdec);
+rrmse_1 = rrmse(img, imdec1);
+rrmse_5 = rrmse(img, imdec5);
+
+%% Part (c)
+
+fft_n = 1024;
+logger = zeros([fft_n/2, 3]);
+for i = 1:fft_n/2
+    frac = i * 2 / fft_n;
+    
+    imfilt = myFilter(imrad, 'Ram-Lak', frac);
+    imfilt1 = myFilter(imrad1, 'Ram-Lak', frac);
+    imfilt5 = myFilter(imrad5, 'Ram-Lak', frac);
+
+    imdec = iradon(imfilt, theta, 'linear', 'None', 1, imsize);
+    imdec1 = iradon(imfilt1, theta, 'linear', 'None', 1, imsize);
+    imdec5 = iradon(imfilt5, theta, 'linear', 'None', 1, imsize);
+
+    logger(i, 1) = rrmse(img, imdec);
+    logger(i, 2) = rrmse(img, imdec1);
+    logger(i, 3) = rrmse(img, imdec5);
+end
+
+plot([2/fft_n:2/fft_n:1], logger, 'LineWidth', 1.5);
+legend('Noiseless', '\sigma=1', '\sigma=5')
+xlabel('L / w_{max}');
+ylabel('RRMSE')
