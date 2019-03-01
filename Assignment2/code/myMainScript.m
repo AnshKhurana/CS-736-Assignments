@@ -10,7 +10,7 @@
 % 'quadPrior' and 'adaPrior.m'.
 %  The implementation of complex gaussian model can be found in
 %  'complexGauss.m'.
-
+warning('off', 'all');
 clc; clear all; close all;
 %% Question 1 
 
@@ -53,7 +53,7 @@ fprintf('%s\n',  "RRMSE for 0.8a* (for quadPrior): " +  num2str(norm(iorg-quad_a
 [huber_b1_2, d] = gradDesc(img, img, 'huberPrior', alpha_hu, gamma_hu*1.2);
 [huber_b0_8, d] = gradDesc(img, img, 'huberPrior', alpha_hu, gamma_hu*0.8);
 
-
+fprintf('%s\n',  "RRMSE for optimal parameters a*, b* (for huberPrior): " +  num2str(norm(iorg-x_rec_huber, 'fro')/norm(iorg, 'fro')));
 fprintf('%s\n',  "RRMSE for 1.2a*, b* (for huberPrior): " +  num2str(norm(iorg-huber_a1_2, 'fro')/norm(iorg, 'fro')));
 fprintf('%s\n',  "RRMSE for 0.8a*, b* (for huberPrior): " +  num2str(norm(iorg-huber_a0_8, 'fro')/norm(iorg, 'fro')));
 fprintf('%s\n',  "RRMSE for a*, 1.2b* (for huberPrior): " +  num2str(norm(iorg-huber_b1_2, 'fro')/norm(iorg, 'fro')));
@@ -68,7 +68,7 @@ fprintf('%s\n',  "RRMSE for a*, 0.8b* (for huberPrior): " +  num2str(norm(iorg-h
 [ada_b0_8, d] = gradDesc(img, img, 'adaPrior', alpha_ada, gamma_ada*0.8);
 
 
-fprintf('%s\n',  "RRMSE for optimal parameters a*, b* (for adaPrior): " +  num2str(norm(iorg-x_rec_huber, 'fro')/norm(iorg, 'fro')));
+fprintf('%s\n',  "RRMSE for optimal parameters a*, b* (for adaPrior): " +  num2str(norm(iorg-x_rec_ada, 'fro')/norm(iorg, 'fro')));
 fprintf('%s\n',  "RRMSE for 1.2a*, b* (for adaPrior): " +  num2str(norm(iorg-ada_a1_2, 'fro')/norm(iorg, 'fro')));
 fprintf('%s\n',  "RRMSE for 0.8a*, b* (for adaPrior): " +  num2str(norm(iorg-ada_a0_8, 'fro')/norm(iorg, 'fro')));
 fprintf('%s\n',  "RRMSE for a*, 1.2b* (for adaPrior): " +  num2str(norm(iorg-ada_b1_2, 'fro')/norm(iorg, 'fro')));
@@ -77,19 +77,19 @@ fprintf('%s\n',  "RRMSE for a*, 0.8b* (for adaPrior): " +  num2str(norm(iorg-ada
 % Part c.
 figure('Position', [100, -50, 500, 700]);
 subplot(3, 2, 1);
-imagesc(iorg); caxis([-0.3, 1.3]);
+imshow(iorg); caxis([-0.3, 1.3]);
 title('Original Noiseless')
 subplot(3, 2, 3);
-imagesc(img); caxis([-0.3, 1.3]);
+imshow(img); caxis([-0.3, 1.3]);
 title({'Original Noisy', strcat('RRMSE: ', num2str(norm(iorg-img, 'fro')/norm(iorg, 'fro')))});
 subplot(3, 2, 4);
-imagesc(x_rec_quad); caxis([-0.3, 1.3]);
+imshow(x_rec_quad); caxis([-0.3, 1.3]);
 title({'Quadratic Loss', strcat('RRMSE: ', num2str(norm(iorg-x_rec_quad, 'fro')/norm(iorg, 'fro')))});
 subplot(3, 2, 5);
-imagesc(x_rec_huber); caxis([-0.3, 1.3]);
+imshow(x_rec_huber); caxis([-0.3, 1.3]);
 title({'Huber Loss', strcat('RRMSE: ', num2str(norm(iorg-x_rec_huber, 'fro')/norm(iorg, 'fro')))});
 subplot(3, 2, 6);
-imagesc(x_rec_ada); caxis([-0.3, 1.3]);
+imshow(x_rec_ada); caxis([-0.3, 1.3]);
 title({'Adaptive Loss', strcat('RRMSE: ', num2str(norm(iorg-x_rec_ada, 'fro')/norm(iorg, 'fro')))});
 fig=gcf;
 save("../results/1c.mat", 'fig', '-mat');
@@ -127,7 +127,7 @@ std_c = sqrt(cov(c_img(:)'))
 
 % Part b.  
 fprintf("The tuned parameters for quad prior: ");
-alpha_q = 0.59
+alpha_q = 0.45
 fprintf("The tuned parameters for Huber prior: ");
 alpha_hu = 0.5
 gamma_hu = 0.1375
@@ -141,16 +141,16 @@ gamma_ada = 0.05
 
 figure('Position', [100, -50, 500, 700]);
 subplot(2, 2, 1);
-imagesc(img); caxis([-0.3, 1.3]);
+imshow(img); caxis([-0.3, 1.3]);
 title({'Original Noisy'});
 subplot(2, 2, 2);
-imagesc(x_rec_quad); caxis([-0.3, 1.3]);
+imshow(x_rec_quad); caxis([-0.3, 1.3]);
 title({'Quadratic Loss'});
 subplot(2, 2, 3);
-imagesc(x_rec_huber); caxis([-0.3, 1.3]);
+imshow(x_rec_huber); caxis([-0.3, 1.3]);
 title({'Huber Loss'});
 subplot(2, 2, 4);
-imagesc(x_rec_ada); caxis([-0.3, 1.3]);
+imshow(x_rec_ada); caxis([-0.3, 1.3]);
 title({'Adaptive Loss'});
 fig=gcf;
 save("../results/2b.mat", 'fig', '-mat');
