@@ -23,3 +23,5 @@ Rf = myRadonTrans(img, t_range, theta_range, ds);
 
 disp(Rf);
 
+
+% Part b. 
