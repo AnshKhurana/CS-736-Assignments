@@ -12,16 +12,16 @@ img = phantom(128);
 I = myIntegration(img, -85, 10, 1);
 disp(I);
 
-dt = 1;
-dth = 1; 
+dt = 5;
+dth = 5; 
 ds = 1;
 
-t_range = -90:dt:90;
-theta_range =  0:dth:175;
+t_range = -90:1:90;
+theta_range =  0:1:175;
 
 Rf = myRadonTrans(img, t_range, theta_range, ds);
 
-disp(Rf);
+% disp(Rf);
 
 imshow(Rf,'InitialMagnification','fit')
 xlabel('\theta (degrees)')
