@@ -3,9 +3,10 @@ function I = myIntegration(img, t, theta, step)
 % Calculating the lower Darboux sum for convenience
 
 [R, C] = size(img);
+O = [C/2, R/2] %Origin
 
-st = sind(theta);
-ct = cosd(theta);
+st = sin(theta);
+ct = cos(theta);
 
 upper_limit = R;
 lower_limit = -R;
@@ -15,14 +16,11 @@ for s = lower_limit:step:upper_limit
 %     disp(s);
     x = t*ct - s*st;
     y = t*st + s*ct;
-    c = x + C/2;
-    r = R/2 -y;
-    if (c >= 1) && (c <= C) && (r <= R) && (r >= 1)   
-        Vq = interp2(img,c,r);
-    else
-        Vq = 0;
-    end
-%     disp(Vq);
+    if (x >= -C/2) && (x < C/2) && (y >
+        
+    r = t*ct - s*st + X/2;
+    e = Y/2 -(t*st + s*ct);
+    Vq = interp2(img,qx,qy);
     I = I + Vq*step;
 end
 
