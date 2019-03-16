@@ -1,0 +1,318 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>myMainScript</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-03-16"><meta name="DC.source" content="myMainScript.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Choice of \beta</a></li><li><a href="#4">Label Initialization</a></li><li><a href="#5">GM Initialization</a></li><li><a href="#6">Segmentation using GMM+HMRF</a></li><li><a href="#7">Results</a></li><li><a href="#8">Class means after segmentation</a></li></ul></div><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>;
+</pre><pre class="codeinput">load(<span class="string">'../data/assignmentSegmentBrainGmmEmMrf.mat'</span>);
+
+img = imageData;
+mask = imageMask;
+K = 3;
+</pre><h2>Choice of \beta<a name="3"></a></h2><pre class="codeinput">beta = 0.35;
+</pre><h2>Label Initialization<a name="4"></a></h2><pre>The brain image shows three broad ranges of image intensities that can
+be segmented naively via thresholding. Function initLabelGuess performs
+a naive thresholding into 3 categories based on intensities.</pre><pre class="codeinput">lab = initLabelGuess(img, mask);
+mu = zeros(1, K);
+sigma = zeros(1, K);
+</pre><h2>GM Initialization<a name="5"></a></h2><pre>Given the initial class labels, their empirical mean and covariance are
+used to initialize the components of the Gaussian mixture. This is also
+the ML estimate of the mixture parameters in this setting.</pre><pre class="codeinput"><span class="keyword">for</span> label = 1:K
+    positions = lab == label;
+    mu(1, label) = mean(img(positions));
+    sigma(1, label) = std(img(positions));
+<span class="keyword">end</span>;
+</pre><h2>Segmentation using GMM+HMRF<a name="6"></a></h2><pre class="codeinput">disp(<span class="string">'Optimal Beta'</span>)
+[L, G] = imageSegEM(img, mask, K, lab, mu, sigma, beta);
+disp(<span class="string">'No MRF Prior'</span>)
+[L0, G0] = imageSegEM(img, mask, K, lab, mu, sigma, 0);
+</pre><pre class="codeoutput">Optimal Beta
+ICM log-apost : 9.519611e+00 =&gt; 9.531722e+00
+ICM log-apost : 9.519611e+00 =&gt; 9.566801e+00
+ICM log-apost : 9.519611e+00 =&gt; 9.564495e+00
+ICM log-apost : 9.519611e+00 =&gt; 9.570121e+00
+ICM log-apost : 9.519611e+00 =&gt; 9.566495e+00
+ICM log-apost : 9.519611e+00 =&gt; 9.570811e+00
+ICM log-apost : 9.519611e+00 =&gt; 9.566781e+00
+ICM log-apost : 9.519611e+00 =&gt; 9.570884e+00
+ICM log-apost : 9.598750e+00 =&gt; 9.606880e+00
+ICM log-apost : 9.598750e+00 =&gt; 9.617499e+00
+ICM log-apost : 9.598750e+00 =&gt; 9.620752e+00
+ICM log-apost : 9.598750e+00 =&gt; 9.626348e+00
+ICM log-apost : 9.598750e+00 =&gt; 9.626779e+00
+ICM log-apost : 9.598750e+00 =&gt; 9.629704e+00
+ICM log-apost : 9.598750e+00 =&gt; 9.628988e+00
+ICM log-apost : 9.598750e+00 =&gt; 9.630953e+00
+ICM log-apost : 9.626467e+00 =&gt; 9.633597e+00
+ICM log-apost : 9.626467e+00 =&gt; 9.644141e+00
+ICM log-apost : 9.626467e+00 =&gt; 9.650792e+00
+ICM log-apost : 9.626467e+00 =&gt; 9.655700e+00
+ICM log-apost : 9.626467e+00 =&gt; 9.658092e+00
+ICM log-apost : 9.626467e+00 =&gt; 9.659640e+00
+ICM log-apost : 9.626467e+00 =&gt; 9.660682e+00
+ICM log-apost : 9.626467e+00 =&gt; 9.661673e+00
+ICM log-apost : 9.652360e+00 =&gt; 9.656102e+00
+ICM log-apost : 9.652360e+00 =&gt; 9.662171e+00
+ICM log-apost : 9.652360e+00 =&gt; 9.667902e+00
+ICM log-apost : 9.652360e+00 =&gt; 9.671889e+00
+ICM log-apost : 9.652360e+00 =&gt; 9.674208e+00
+ICM log-apost : 9.652360e+00 =&gt; 9.675241e+00
+ICM log-apost : 9.652360e+00 =&gt; 9.675823e+00
+ICM log-apost : 9.652360e+00 =&gt; 9.676314e+00
+ICM log-apost : 9.664588e+00 =&gt; 9.667314e+00
+ICM log-apost : 9.664588e+00 =&gt; 9.669779e+00
+ICM log-apost : 9.664588e+00 =&gt; 9.673678e+00
+ICM log-apost : 9.664588e+00 =&gt; 9.675617e+00
+ICM log-apost : 9.664588e+00 =&gt; 9.676519e+00
+ICM log-apost : 9.664588e+00 =&gt; 9.676841e+00
+ICM log-apost : 9.664588e+00 =&gt; 9.677138e+00
+ICM log-apost : 9.664588e+00 =&gt; 9.677214e+00
+ICM log-apost : 9.664301e+00 =&gt; 9.666343e+00
+ICM log-apost : 9.664301e+00 =&gt; 9.666710e+00
+ICM log-apost : 9.664301e+00 =&gt; 9.668624e+00
+ICM log-apost : 9.664301e+00 =&gt; 9.669263e+00
+ICM log-apost : 9.664301e+00 =&gt; 9.669967e+00
+ICM log-apost : 9.664301e+00 =&gt; 9.670086e+00
+ICM log-apost : 9.664301e+00 =&gt; 9.670125e+00
+ICM log-apost : 9.664301e+00 =&gt; 9.670131e+00
+ICM log-apost : 9.657330e+00 =&gt; 9.659255e+00
+ICM log-apost : 9.657330e+00 =&gt; 9.659768e+00
+ICM log-apost : 9.657330e+00 =&gt; 9.660777e+00
+ICM log-apost : 9.657330e+00 =&gt; 9.661292e+00
+ICM log-apost : 9.657330e+00 =&gt; 9.661604e+00
+ICM log-apost : 9.657330e+00 =&gt; 9.661798e+00
+ICM log-apost : 9.657330e+00 =&gt; 9.661798e+00
+ICM log-apost : 9.657330e+00 =&gt; 9.661794e+00
+ICM log-apost : 9.648224e+00 =&gt; 9.649975e+00
+ICM log-apost : 9.648224e+00 =&gt; 9.649974e+00
+ICM log-apost : 9.648224e+00 =&gt; 9.650760e+00
+ICM log-apost : 9.648224e+00 =&gt; 9.651319e+00
+ICM log-apost : 9.648224e+00 =&gt; 9.651544e+00
+ICM log-apost : 9.648224e+00 =&gt; 9.651648e+00
+ICM log-apost : 9.648224e+00 =&gt; 9.651646e+00
+ICM log-apost : 9.648224e+00 =&gt; 9.651689e+00
+ICM log-apost : 9.636572e+00 =&gt; 9.637909e+00
+ICM log-apost : 9.636572e+00 =&gt; 9.637285e+00
+ICM log-apost : 9.636572e+00 =&gt; 9.638815e+00
+ICM log-apost : 9.636572e+00 =&gt; 9.639572e+00
+ICM log-apost : 9.636572e+00 =&gt; 9.639883e+00
+ICM log-apost : 9.636572e+00 =&gt; 9.639909e+00
+ICM log-apost : 9.636572e+00 =&gt; 9.639982e+00
+ICM log-apost : 9.636572e+00 =&gt; 9.639992e+00
+ICM log-apost : 9.624618e+00 =&gt; 9.625360e+00
+ICM log-apost : 9.624618e+00 =&gt; 9.625175e+00
+ICM log-apost : 9.624618e+00 =&gt; 9.627190e+00
+ICM log-apost : 9.624618e+00 =&gt; 9.627979e+00
+ICM log-apost : 9.624618e+00 =&gt; 9.628404e+00
+ICM log-apost : 9.624618e+00 =&gt; 9.628493e+00
+ICM log-apost : 9.624618e+00 =&gt; 9.628620e+00
+ICM log-apost : 9.624618e+00 =&gt; 9.628707e+00
+No MRF Prior
+ICM log-apost : 9.562332e+00 =&gt; 9.573103e+00
+ICM log-apost : 9.562332e+00 =&gt; 9.573103e+00
+ICM log-apost : 9.562332e+00 =&gt; 9.573103e+00
+ICM log-apost : 9.562332e+00 =&gt; 9.573103e+00
+ICM log-apost : 9.562332e+00 =&gt; 9.573103e+00
+ICM log-apost : 9.562332e+00 =&gt; 9.573103e+00
+ICM log-apost : 9.562332e+00 =&gt; 9.573103e+00
+ICM log-apost : 9.562332e+00 =&gt; 9.573103e+00
+ICM log-apost : 9.637580e+00 =&gt; 9.671060e+00
+ICM log-apost : 9.637580e+00 =&gt; 9.671060e+00
+ICM log-apost : 9.637580e+00 =&gt; 9.671060e+00
+ICM log-apost : 9.637580e+00 =&gt; 9.671060e+00
+ICM log-apost : 9.637580e+00 =&gt; 9.671060e+00
+ICM log-apost : 9.637580e+00 =&gt; 9.671060e+00
+ICM log-apost : 9.637580e+00 =&gt; 9.671060e+00
+ICM log-apost : 9.637580e+00 =&gt; 9.671060e+00
+ICM log-apost : 9.703161e+00 =&gt; 9.730533e+00
+ICM log-apost : 9.703161e+00 =&gt; 9.730533e+00
+ICM log-apost : 9.703161e+00 =&gt; 9.730533e+00
+ICM log-apost : 9.703161e+00 =&gt; 9.730533e+00
+ICM log-apost : 9.703161e+00 =&gt; 9.730533e+00
+ICM log-apost : 9.703161e+00 =&gt; 9.730533e+00
+ICM log-apost : 9.703161e+00 =&gt; 9.730533e+00
+ICM log-apost : 9.703161e+00 =&gt; 9.730533e+00
+ICM log-apost : 9.736649e+00 =&gt; 9.748116e+00
+ICM log-apost : 9.736649e+00 =&gt; 9.748116e+00
+ICM log-apost : 9.736649e+00 =&gt; 9.748116e+00
+ICM log-apost : 9.736649e+00 =&gt; 9.748116e+00
+ICM log-apost : 9.736649e+00 =&gt; 9.748116e+00
+ICM log-apost : 9.736649e+00 =&gt; 9.748116e+00
+ICM log-apost : 9.736649e+00 =&gt; 9.748116e+00
+ICM log-apost : 9.736649e+00 =&gt; 9.748116e+00
+ICM log-apost : 9.741752e+00 =&gt; 9.747989e+00
+ICM log-apost : 9.741752e+00 =&gt; 9.747989e+00
+ICM log-apost : 9.741752e+00 =&gt; 9.747989e+00
+ICM log-apost : 9.741752e+00 =&gt; 9.747989e+00
+ICM log-apost : 9.741752e+00 =&gt; 9.747989e+00
+ICM log-apost : 9.741752e+00 =&gt; 9.747989e+00
+ICM log-apost : 9.741752e+00 =&gt; 9.747989e+00
+ICM log-apost : 9.741752e+00 =&gt; 9.747989e+00
+ICM log-apost : 9.743745e+00 =&gt; 9.748536e+00
+ICM log-apost : 9.743745e+00 =&gt; 9.748536e+00
+ICM log-apost : 9.743745e+00 =&gt; 9.748536e+00
+ICM log-apost : 9.743745e+00 =&gt; 9.748536e+00
+ICM log-apost : 9.743745e+00 =&gt; 9.748536e+00
+ICM log-apost : 9.743745e+00 =&gt; 9.748536e+00
+ICM log-apost : 9.743745e+00 =&gt; 9.748536e+00
+ICM log-apost : 9.743745e+00 =&gt; 9.748536e+00
+ICM log-apost : 9.746212e+00 =&gt; 9.752877e+00
+ICM log-apost : 9.746212e+00 =&gt; 9.752877e+00
+ICM log-apost : 9.746212e+00 =&gt; 9.752877e+00
+ICM log-apost : 9.746212e+00 =&gt; 9.752877e+00
+ICM log-apost : 9.746212e+00 =&gt; 9.752877e+00
+ICM log-apost : 9.746212e+00 =&gt; 9.752877e+00
+ICM log-apost : 9.746212e+00 =&gt; 9.752877e+00
+ICM log-apost : 9.746212e+00 =&gt; 9.752877e+00
+ICM log-apost : 9.750001e+00 =&gt; 9.760675e+00
+ICM log-apost : 9.750001e+00 =&gt; 9.760675e+00
+ICM log-apost : 9.750001e+00 =&gt; 9.760675e+00
+ICM log-apost : 9.750001e+00 =&gt; 9.760675e+00
+ICM log-apost : 9.750001e+00 =&gt; 9.760675e+00
+ICM log-apost : 9.750001e+00 =&gt; 9.760675e+00
+ICM log-apost : 9.750001e+00 =&gt; 9.760675e+00
+ICM log-apost : 9.750001e+00 =&gt; 9.760675e+00
+ICM log-apost : 9.757401e+00 =&gt; 9.770115e+00
+ICM log-apost : 9.757401e+00 =&gt; 9.770115e+00
+ICM log-apost : 9.757401e+00 =&gt; 9.770115e+00
+ICM log-apost : 9.757401e+00 =&gt; 9.770115e+00
+ICM log-apost : 9.757401e+00 =&gt; 9.770115e+00
+ICM log-apost : 9.757401e+00 =&gt; 9.770115e+00
+ICM log-apost : 9.757401e+00 =&gt; 9.770115e+00
+ICM log-apost : 9.757401e+00 =&gt; 9.770115e+00
+ICM log-apost : 9.764966e+00 =&gt; 9.773350e+00
+ICM log-apost : 9.764966e+00 =&gt; 9.773350e+00
+ICM log-apost : 9.764966e+00 =&gt; 9.773350e+00
+ICM log-apost : 9.764966e+00 =&gt; 9.773350e+00
+ICM log-apost : 9.764966e+00 =&gt; 9.773350e+00
+ICM log-apost : 9.764966e+00 =&gt; 9.773350e+00
+ICM log-apost : 9.764966e+00 =&gt; 9.773350e+00
+ICM log-apost : 9.764966e+00 =&gt; 9.773350e+00
+</pre><h2>Results<a name="7"></a></h2><pre class="codeinput">figure(<span class="string">'Position'</span>, [100, 100, 400, 400]), imshow(img);
+title(<span class="string">'Corrupted Image (Original)'</span>)
+visClasses(L, G, beta)
+visClasses(L0, G0, 0)
+</pre><img vspace="5" hspace="5" src="myMainScript_01.png" style="width:311px;height:249px;" alt=""> <img vspace="5" hspace="5" src="myMainScript_02.png" style="width:311px;height:249px;" alt=""> <img vspace="5" hspace="5" src="myMainScript_03.png" style="width:311px;height:249px;" alt=""> <img vspace="5" hspace="5" src="myMainScript_04.png" style="width:311px;height:249px;" alt=""> <img vspace="5" hspace="5" src="myMainScript_05.png" style="width:311px;height:249px;" alt=""> <img vspace="5" hspace="5" src="myMainScript_06.png" style="width:311px;height:249px;" alt=""> <img vspace="5" hspace="5" src="myMainScript_07.png" style="width:311px;height:249px;" alt=""> <img vspace="5" hspace="5" src="myMainScript_08.png" style="width:311px;height:249px;" alt=""> <img vspace="5" hspace="5" src="myMainScript_09.png" style="width:311px;height:249px;" alt=""> <h2>Class means after segmentation<a name="8"></a></h2><pre class="codeinput"><span class="keyword">for</span> label = 1:K
+    positions = L == label;
+    mu_opt(1, label) = mean(img(positions));
+    sigma_opt(1, label) = std(img(positions));
+<span class="keyword">end</span>;
+disp(mu_opt)
+</pre><pre class="codeoutput">    0.6349    0.5342    0.3476
+
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clear all; close all;
+
+%% 
+
+load('../data/assignmentSegmentBrainGmmEmMrf.mat');
+
+img = imageData;
+mask = imageMask;
+K = 3;
+%% Choice of \beta
+beta = 0.35;
+
+%% Label Initialization
+%  The brain image shows three broad ranges of image intensities that can
+%  be segmented naively via thresholding. Function initLabelGuess performs
+%  a naive thresholding into 3 categories based on intensities.
+lab = initLabelGuess(img, mask);
+mu = zeros(1, K);
+sigma = zeros(1, K);
+
+%% GM Initialization
+%  Given the initial class labels, their empirical mean and covariance are
+%  used to initialize the components of the Gaussian mixture. This is also
+%  the ML estimate of the mixture parameters in this setting.
+for label = 1:K
+    positions = lab == label;
+    mu(1, label) = mean(img(positions));
+    sigma(1, label) = std(img(positions));
+end;
+
+%% Segmentation using GMM+HMRF
+disp('Optimal Beta')
+[L, G] = imageSegEM(img, mask, K, lab, mu, sigma, beta);
+disp('No MRF Prior')
+[L0, G0] = imageSegEM(img, mask, K, lab, mu, sigma, 0);
+
+%% Results
+figure('Position', [100, 100, 400, 400]), imshow(img);
+title('Corrupted Image (Original)')
+visClasses(L, G, beta)
+visClasses(L0, G0, 0)
+
+%% Class means after segmentation
+for label = 1:K
+    positions = L == label;
+    mu_opt(1, label) = mean(img(positions));
+    sigma_opt(1, label) = std(img(positions));
+end;
+disp(mu_opt)
+##### SOURCE END #####
+--></body></html>
