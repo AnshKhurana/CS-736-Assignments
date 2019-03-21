@@ -1,0 +1,5 @@
+function J = cost(w, q, MU, y, memberships,  means, bias, mask)
+J = 0;
+for i = 1
+for k = 1:K
+   sum((memberships(k).^q).*((y - MU(k)*bias).^2));   

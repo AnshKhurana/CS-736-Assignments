@@ -7,7 +7,7 @@ means = zeros(1,3);
 means(1) = mean(data(ids == 1));
 means(2) = mean(data(ids == 2));
 means(3) = mean(data(ids == 3));
-bias = mask;
+bias = ones(M, N);
 disp(means);
 bias_removed = zeros(M, N);
 residual_image = zeros(M, N)
@@ -36,7 +36,7 @@ for (J_present > 1e-4) or (J_present - J_new)/J_present < 1e-6)
         DJ(:. :, K) = DJK(y, w, mask, means(k), bias);
         temp = (1./DJ(:, :, k)).^q;
         memberships(:, :, k) = temp/sum(temp);
-        means(k) =  sum((memberships(:, :, k).^q).*y .* conv2( bias,  w))/ sum(memberships(:, :, k).^q .* conv2(bias.^2, w));
+        means(k) =  sum((memberships(:, :, k).^q).*y .* conv2( bias,  w))/ sum(memberships(:, :, k).^q .* conv2(bias.^2, w)) );
     end
 J_present = J_new;
 Jnew = costfn(w, q, y, memberships,  means, bias, mask);
