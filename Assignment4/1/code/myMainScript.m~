@@ -1,8 +1,8 @@
 %% Assignment 4, Image Segmentaion
 %  CS736: Medical Image Computing, IIT Bombay (Spring 2019)
 %  Dhruv Shah and Ansh Khurana
-%  
-% Find implementation of FCM seg. + bias correction in FCM.m
+%
+% 
 
 warning('off', 'all');
 clc; clear all; close all;
@@ -10,19 +10,21 @@ clc; clear all; close all;
 %% Question 1
 load("../data/assignmentSegmentBrain.mat");
 % Constants
-figure;
 K = 3; 
 % Tunable parameters - 
-q = 3;
+q = 2;
 weight_sigma = 2;
 w = fspecial('gaussian', 13,  weight_sigma);
 
 %% Report
 %% 1 a)
-% The value of q = 3 (Fuzzy clustering)
+% The value of q = 
+disp(q);
 %% 1 b)
 % Neighbourhood mask is a gaussian filter (13x13, std. deviation = 2)
-w
+imshow(w, [1300 1300]);
+title("Neighbourhood Mask W_{ij}");
+figure;
 %% 1 c)
 % K-means clustering is used to initialize memberships of the data points.
 % This is a good initialization choice according to the 'pyramid' approach
@@ -48,10 +50,9 @@ for k = 1:K
 %      figure;
      memberships(:, :, k) = temp;
 end
-
 for k = 1:K
     imshow(memberships(:, :, k));
-    title(strcat("Initial Membership of class ", num2str(k)));
+    title("Initial Membership of class " + num2str(k));
     figure;
 end
 
@@ -73,14 +74,14 @@ figure;
 %% 1 f)
 imshow(y);
 title("Original corrupted image");
-figure;
+
 for k = 1:K
     imshow(memberships(:, :, k));
     title("Memberships for class " + num2str(k));
     figure;
 end
 
-imagesc(bias);
+imshow(bias);
 title("Optimal bias field estimate");
 figure;
 

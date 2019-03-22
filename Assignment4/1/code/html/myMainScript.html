@@ -1,0 +1,276 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>myMainScript</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-03-23"><meta name="DC.source" content="myMainScript.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Assignment 4, Image Segmentaion</a></li><li><a href="#2">Question 1</a></li><li><a href="#3">Report</a></li><li><a href="#4">1 a)</a></li><li><a href="#5">1 b)</a></li><li><a href="#6">1 c)</a></li><li><a href="#7">1 d)</a></li><li><a href="#8">1 e)</a></li><li><a href="#9">1 f)</a></li><li><a href="#10">1 g)</a></li></ul></div><h2 id="1">Assignment 4, Image Segmentaion</h2><pre>CS736: Medical Image Computing, IIT Bombay (Spring 2019)
+Dhruv Shah and Ansh Khurana</pre><p>Find implementation of FCM seg. + bias correction in FCM.m</p><pre class="codeinput">warning(<span class="string">'off'</span>, <span class="string">'all'</span>);
+clc; clear <span class="string">all</span>; close <span class="string">all</span>;
+</pre><h2 id="2">Question 1</h2><pre class="codeinput">load(<span class="string">"../data/assignmentSegmentBrain.mat"</span>);
+<span class="comment">% Constants</span>
+figure;
+K = 3;
+<span class="comment">% Tunable parameters -</span>
+q = 3;
+weight_sigma = 2;
+w = fspecial(<span class="string">'gaussian'</span>, 13,  weight_sigma);
+</pre><img vspace="5" hspace="5" src="myMainScript_01.png" alt=""> <h2 id="3">Report</h2><h2 id="4">1 a)</h2><p>The value of q = 3 (Fuzzy clustering)</p><h2 id="5">1 b)</h2><p>Neighbourhood mask is a gaussian filter (13x13, std. deviation = 2)</p><pre class="codeinput">w
+</pre><pre class="codeoutput">
+w =
+
+  Columns 1 through 7
+
+    0.0000    0.0000    0.0001    0.0001    0.0003    0.0004    0.0004
+    0.0000    0.0001    0.0002    0.0006    0.0011    0.0015    0.0018
+    0.0001    0.0002    0.0007    0.0018    0.0033    0.0048    0.0054
+    0.0001    0.0006    0.0018    0.0042    0.0079    0.0114    0.0129
+    0.0003    0.0011    0.0033    0.0079    0.0147    0.0213    0.0242
+    0.0004    0.0015    0.0048    0.0114    0.0213    0.0311    0.0352
+    0.0004    0.0018    0.0054    0.0129    0.0242    0.0352    0.0399
+    0.0004    0.0015    0.0048    0.0114    0.0213    0.0311    0.0352
+    0.0003    0.0011    0.0033    0.0079    0.0147    0.0213    0.0242
+    0.0001    0.0006    0.0018    0.0042    0.0079    0.0114    0.0129
+    0.0001    0.0002    0.0007    0.0018    0.0033    0.0048    0.0054
+    0.0000    0.0001    0.0002    0.0006    0.0011    0.0015    0.0018
+    0.0000    0.0000    0.0001    0.0001    0.0003    0.0004    0.0004
+
+  Columns 8 through 13
+
+    0.0004    0.0003    0.0001    0.0001    0.0000    0.0000
+    0.0015    0.0011    0.0006    0.0002    0.0001    0.0000
+    0.0048    0.0033    0.0018    0.0007    0.0002    0.0001
+    0.0114    0.0079    0.0042    0.0018    0.0006    0.0001
+    0.0213    0.0147    0.0079    0.0033    0.0011    0.0003
+    0.0311    0.0213    0.0114    0.0048    0.0015    0.0004
+    0.0352    0.0242    0.0129    0.0054    0.0018    0.0004
+    0.0311    0.0213    0.0114    0.0048    0.0015    0.0004
+    0.0213    0.0147    0.0079    0.0033    0.0011    0.0003
+    0.0114    0.0079    0.0042    0.0018    0.0006    0.0001
+    0.0048    0.0033    0.0018    0.0007    0.0002    0.0001
+    0.0015    0.0011    0.0006    0.0002    0.0001    0.0000
+    0.0004    0.0003    0.0001    0.0001    0.0000    0.0000
+
+</pre><h2 id="6">1 c)</h2><p>K-means clustering is used to initialize memberships of the data points. This is a good initialization choice according to the 'pyramid' approach of computation where a coarser result is used for initializing a more complex algorithm.</p><pre class="codeinput">y= imageData;
+mask = imageMask;
+[M, N] = size(y);
+memberships = zeros(M, N, K);
+
+data = reshape(y,M*N, 1);
+ids = kmeans(data, K);
+means = zeros(1,3);
+means(1) = mean(data(ids == 1));
+means(2) = mean(data(ids == 2));
+means(3) = mean(data(ids == 3));
+
+<span class="keyword">for</span> k = 1:K
+     temp = zeros(M, N);
+     temp(ids == k) = 1;
+     temp = temp .* mask;
+<span class="comment">%      imshow(temp);</span>
+<span class="comment">%      figure;</span>
+     memberships(:, :, k) = temp;
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> k = 1:K
+    imshow(memberships(:, :, k));
+    title(strcat(<span class="string">"Initial Membership of class "</span>, num2str(k)));
+    figure;
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="myMainScript_02.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_03.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_04.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_05.png" alt=""> <h2 id="7">1 d)</h2><p>Initially we started with means corresponding to k-means clustering. However, since there is a bias field present, we tuned the initialiazation of means to [0.1, 0.9, 0.3] for better results in lesser number of iterations.</p><h2 id="8">1 e)</h2><pre class="codeinput">imageData = imageData .* imageMask;
+[means, bias, memberships, cost_log, bias_removed, residual_image] = FCM(imageData, q, K, imageMask, w);
+plot(cost_log);
+xlabel(<span class="string">"Number of iterations"</span>);
+ylabel(<span class="string">"Cost function"</span>);
+title(<span class="string">"1 e) Cost function versus the number of iterations"</span>);
+figure;
+</pre><img vspace="5" hspace="5" src="myMainScript_06.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_07.png" alt=""> <h2 id="9">1 f)</h2><pre class="codeinput">imshow(y);
+title(<span class="string">"Original corrupted image"</span>);
+figure;
+<span class="keyword">for</span> k = 1:K
+    imshow(memberships(:, :, k));
+    title(<span class="string">"Memberships for class "</span> + num2str(k));
+    figure;
+<span class="keyword">end</span>
+
+imshow(bias);
+title(<span class="string">"Optimal bias field estimate"</span>);
+figure;
+
+imshow(bias_removed);
+title(<span class="string">"bias removed image"</span>);
+figure;
+
+imshow(residual_image);
+title(<span class="string">"Residual Image"</span>);
+</pre><img vspace="5" hspace="5" src="myMainScript_08.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_09.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_10.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_11.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_12.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_13.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_14.png" alt=""> <h2 id="10">1 g)</h2><p>Optimal estimates for class means with the first mean fixed to 0.1</p><pre class="codeinput">means
+</pre><pre class="codeoutput">
+means =
+
+    0.2000    0.4307    0.3696
+
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Assignment 4, Image Segmentaion
+%  CS736: Medical Image Computing, IIT Bombay (Spring 2019)
+%  Dhruv Shah and Ansh Khurana
+%  
+% Find implementation of FCM seg. + bias correction in FCM.m
+
+warning('off', 'all');
+clc; clear all; close all;
+
+%% Question 1
+load("../data/assignmentSegmentBrain.mat");
+% Constants
+figure;
+K = 3; 
+% Tunable parameters - 
+q = 3;
+weight_sigma = 2;
+w = fspecial('gaussian', 13,  weight_sigma);
+
+%% Report
+%% 1 a)
+% The value of q = 3 (Fuzzy clustering)
+%% 1 b)
+% Neighbourhood mask is a gaussian filter (13x13, std. deviation = 2)
+w
+%% 1 c)
+% K-means clustering is used to initialize memberships of the data points.
+% This is a good initialization choice according to the 'pyramid' approach
+% of computation where a coarser result is used for initializing a more
+% complex algorithm.  
+y= imageData;
+mask = imageMask;
+[M, N] = size(y);
+memberships = zeros(M, N, K);
+
+data = reshape(y,M*N, 1);
+ids = kmeans(data, K);
+means = zeros(1,3);
+means(1) = mean(data(ids == 1));
+means(2) = mean(data(ids == 2));
+means(3) = mean(data(ids == 3));
+
+for k = 1:K
+     temp = zeros(M, N);
+     temp(ids == k) = 1;
+     temp = temp .* mask;
+%      imshow(temp);
+%      figure;
+     memberships(:, :, k) = temp;
+end
+
+for k = 1:K
+    imshow(memberships(:, :, k));
+    title(strcat("Initial Membership of class ", num2str(k)));
+    figure;
+end
+
+%% 1 d)
+% Initially we started with means corresponding to k-means clustering.
+% However, since there is a bias field present, we tuned the
+% initialiazation of means to [0.1, 0.9, 0.3] for better results in lesser
+% number of iterations.
+
+%% 1 e)
+%
+imageData = imageData .* imageMask;
+[means, bias, memberships, cost_log, bias_removed, residual_image] = FCM(imageData, q, K, imageMask, w);
+plot(cost_log);
+xlabel("Number of iterations");
+ylabel("Cost function");
+title("1 e) Cost function versus the number of iterations");
+figure;
+%% 1 f)
+imshow(y);
+title("Original corrupted image");
+figure;
+for k = 1:K
+    imshow(memberships(:, :, k));
+    title("Memberships for class " + num2str(k));
+    figure;
+end
+
+imshow(bias);
+title("Optimal bias field estimate");
+figure;
+
+imshow(bias_removed);
+title("bias removed image");
+figure;
+
+imshow(residual_image);
+title("Residual Image");
+
+%% 1 g)
+% Optimal estimates for class means with the first mean fixed to 0.1
+means
+
+
+
+##### SOURCE END #####
+--></body></html>
