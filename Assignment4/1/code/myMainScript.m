@@ -10,7 +10,6 @@ clc; clear all; close all;
 %% Question 1
 load("../data/assignmentSegmentBrain.mat");
 % Constants
-figure;
 K = 3; 
 % Tunable parameters - 
 q = 3;
@@ -44,18 +43,19 @@ for k = 1:K
      temp = zeros(M, N);
      temp(ids == k) = 1;
      temp = temp .* mask;
-%      imshow(temp);
-%      figure;
      memberships(:, :, k) = temp;
 end
 
 for k = 1:K
-    imshow(memberships(:, :, k));
+    figure, imshow(memberships(:, :, k));
     title(strcat("Initial Membership of class ", num2str(k)));
-    figure;
+    fig = gcf;
+  
+    save(strcat('../results/1c_',num2str(k) ,'.mat'), 'fig', '-mat');
+    
 end
 
-%% 1 d)
+%% 1 d) 
 % Initially we started with means corresponding to k-means clustering.
 % However, since there is a bias field present, we tuned the
 % initialiazation of means to [0.1, 0.9, 0.3] for better results in lesser
@@ -65,31 +65,43 @@ end
 %
 imageData = imageData .* imageMask;
 [means, bias, memberships, cost_log, bias_removed, residual_image] = FCM(imageData, q, K, imageMask, w);
-plot(cost_log);
+figure, plot(cost_log);
 xlabel("Number of iterations");
 ylabel("Cost function");
 title("1 e) Cost function versus the number of iterations");
-figure;
+fig = gcf;
+save(strcat('../results/1e', '.mat'), 'fig', '-mat');
+
 %% 1 f)
-imshow(y);
+
+figure, imshow(y);
 title("Original corrupted image");
-figure;
+fig = gcf;
+save(strcat('../results/1f_original.mat'), 'fig', '-mat');
+
 for k = 1:K
-    imshow(memberships(:, :, k));
+
+    figure, imshow(memberships(:, :, k));
     title("Memberships for class " + num2str(k));
-    figure;
+    fig = gcf;
+    save(strcat('../results/1f_mems_',num2str(k) ,'.mat'), 'fig', '-mat');
+
 end
 
-imagesc(bias);
+figure, imagesc(bias);
 title("Optimal bias field estimate");
-figure;
+fig = gcf;
+save(strcat('../results/1f_bias.mat'), 'fig', '-mat');
 
-imshow(bias_removed);
+figure, imshow(bias_removed);
 title("bias removed image");
-figure;
+fig = gcf;
+save(strcat('../results/1f_biasremoved.mat'), 'fig', '-mat');
 
-imshow(residual_image);
+figure, imshow(residual_image);
 title("Residual Image");
+fig = gcf;
+save(strcat('../results/1f_residual.mat'), 'fig', '-mat');
 
 %% 1 g)
 % Optimal estimates for class means with the first mean fixed to 0.1

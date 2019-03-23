@@ -8,7 +8,6 @@ means(1) = mean(data(ids == 1));
 means(2) = mean(data(ids == 2));
 means(3) = mean(data(ids == 3));
 bias = mask;
-% imshow(bias);
 
 bias_removed = zeros(M, N);
 residual_image = zeros(M, N);
@@ -19,13 +18,10 @@ for k = 1:K
      temp = zeros(M, N);
      temp(ids == k) = 1;
      temp = temp .* mask;
-%      imshow(temp);
-%      figure;
      memberships(:, :, k) = temp;
 end
 J_present = inf;
 J_new = costfn(w, q, y, memberships,  means, bias, mask, K);
-% disp(J_new);
 cost_log = J_present;
 
 rel = 1;
@@ -46,8 +42,6 @@ while ((iter < maxiter) ) %&& (rel > 1e-9)
         temp = real(temp);
         sum_DJ = sum_DJ + temp;
     end
-%     disp("sum\_DJ");
-%     disp(sum_DJ);
     for k = 1:K
         temp =  DJ(:, :, k);
         temp(temp ~= 0) = 1./(temp(temp ~= 0));
